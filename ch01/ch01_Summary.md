@@ -29,3 +29,4 @@
 - 结束输入 : Win 下 `^ + Z + Enter`结束输入 Unix 下 `^ + D`结束输入 
 - 流重定向 : `$ exename < infile > outfile` 
 - 加速标准流 : `std::ios_base::sync_with_stdio(false);` 关闭标准流与标准C流同步加快速度, 之后不能混用否则会导致未知的插入字符出现
+- 注释 : 单行注释(`//`) 和多行注释(`/* */`)  对于多行注释不能嵌套

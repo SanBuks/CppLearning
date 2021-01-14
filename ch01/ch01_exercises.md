@@ -214,6 +214,8 @@ int main(){
 ### 1.17
 > 如果输入的所有值都是相等的，本节的程序会输出什么？如果没有重复值，输出又会是怎样的？ 
 
+参考1.18
+
 ### 1.18
 > 编译并运行本节的程序，给它输入全都相等的值。再次运行程序，输入没有重复的值。
 ```c++
@@ -260,37 +262,85 @@ Value : 6 occurs 1 times
 
 ### 1.20
 > 在网站http://www.informit.com/title/032174113 上，第1章的代码目录包含了头文件 Sales_item.h。将它拷贝到你自己的工作目录中。用它编写一个程序，读取一组书籍销售记录，将每条记录打印到标准输出上。
-
-
+```c++
+#include <iostream>
+#include "Sales_item.h"
+int main(){
+	Sales_item curr;
+	while(std::cin>>curr)
+		std::cout<<curr<<"\n";
+	return 0;
+}
+// ./atest < data_1_20
+```
 
 ### 1.21
 > 编写程序，读取两个 ISBN 相同的 Sales_item 对象，输出他们的和。
 ```c++
 #include<iostream>
-#include"../Sales_item.h"
+#include"Sales_item.h"
 using namespace std;
 int main(){
     Sales_item a,b;
     cin>>a>>b;
-    if(a.isbn()==b.isbn())
+    if(a.isbn()==b.isbn()){
         cout<<a+b<<endl;
         return 0;
-    else{
+	}else{
         cerr<<"no same books"<<endl;
-        return -1;
+        return 1;
     }
 }
+// ./atest < data_1_21
 ```
 
 ### 1.22
 > 编写程序，读取多个具有相同 ISBN 的销售记录，输出所有记录的和。
-
-### 1.23
-> 读取多条聚在一起的纪录,统计结果并输出
-
 ```c++
 #include<iostream>
-#include"../Sales_item.h"
+#include"Sales_item.h"
+using namespace std;
+int main(){
+    Sales_item sum, book;
+	if(cin>>sum){
+		while(cin>>book)
+			sum+=book;
+        cout<<sum<<endl;
+		return 0;
+	}else{
+    	cerr<<"no books"<<endl;
+        return 1;
+	}
+}
+// ./atest < data_1_22
+```
+
+### 1.23
+> 编写程序，读取多条销售记录，并统计每个 ISBN（每本书）有几条销售记录。
+```c++
+#include <iostream>
+#include <map>
+#include "Sales_item.h"
+int main(){
+    Sales_item cur;
+	Sales_item val;
+	std::map<std::string, Sales_item> result;
+	while(std::cin>>val)
+		result[val.isbn()]+=val;
+	for(const auto &w : result){
+		std::cout<<"the book id is "<<w.first;
+		std::cout<<" average price is "<<w.second.avg_price()<<'\n';
+	}
+	return 0;
+}
+// ./atest < data_1_23
+```
+
+### 1.24
+> 读输入表示多个 ISBN 的多条销售记录来测试上一个程序，每个 ISBN 的记录应该聚在一起。
+```c++
+#include<iostream>
+#include"Sales_item.h"
 using namespace std;
 int main(){
     Sales_item cur;
@@ -312,4 +362,10 @@ int main(){
     cerr<<"no books!"<<endl;
     return -1;
 }
+// ./atest < data_1_24
 ```
+
+### 1.25
+> 借助网站上的Sales_item.h头文件，编译并运行本节给出的书店程序。
+
+参考1.24

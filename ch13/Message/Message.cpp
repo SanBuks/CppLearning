@@ -50,6 +50,15 @@ Message &Message::operator=(const Message &rhs){
 	return *this;
 }
 
+void Message::move_Folders(Message *m){
+	folders=std::move(m->folders);
+	for(auto f:folders){
+		f->remMsg(m);
+		f->addMsg(this);
+	}
+	m->folders.clear();
+}
+
 void swap(Message &lhs, Message &rhs){
 	using std::swap;
 

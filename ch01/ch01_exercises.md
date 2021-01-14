@@ -191,8 +191,80 @@ for (int i = -100; i <= 100; ++i)
 	- 优点 :  控制变量的初始化一般放在语句之前, 修改一般放在循环体中, 适用于循环次数不知的情况 
 	- 缺点 : 循环控制变量需要额外设立, 自己释放, 形式上不如for语句简洁
 
+### 1.15
+> 编写程序，包含第14页“再探编译”中讨论的常见错误。熟悉编译器生成的错误信息。
+
+- 语法错误(syntax error)
+- 类型错误(type error)
+- 声明错误(declaration error)
+
+### 1.16
+> 编写程序，从cin读取一组数，输出其和。
+
+```c++
+#include <iostream>
+int main(){
+	long long sum=0; int n;
+	while(std::cin>>n) sum+=n;
+	std::cout<<sum;
+	return 0;
+}
+```
+
+### 1.17
+> 如果输入的所有值都是相等的，本节的程序会输出什么？如果没有重复值，输出又会是怎样的？ 
+
+### 1.18
+> 编译并运行本节的程序，给它输入全都相等的值。再次运行程序，输入没有重复的值。
+```c++
+#include <iostream>
+int main(){
+	int currVal=0, val=0;
+	if(std::cin>>currVal){  // 第一个数判断
+		int cnt=1;
+		while(std::cin>>val){
+			if(val==currVal) cnt++;
+			else {
+				std::cout<<" Value : "<<currVal
+					<<" occurs "<<cnt<<" times\n";
+				currVal=val;
+				cnt=1;
+			}
+		}
+		std::cout<<" Value : "<<currVal  // 输出最后一个数
+			<<" occurs "<<cnt<<" times\n";
+	}
+	return 0;
+}
+```
+
+input :
+6 6 6 6 6 6 6
+output :
+Value : 6 occurs 7 times
+
+input :
+1 2 3 4 5 6
+output :
+Value : 1 occurs 1 times
+Value : 2 occurs 1 times
+Value : 3 occurs 1 times
+Value : 4 occurs 1 times
+Value : 5 occurs 1 times
+Value : 6 occurs 1 times
+
+### 1.19
+> 修改你为1.4.1节练习1.11（第11页）所编写的程序（打印一个范围内的数），使其能处理用户输入的第一个数比第二个数小的情况。
+
+参考1.11
+
+### 1.20
+> 在网站http://www.informit.com/title/032174113 上，第1章的代码目录包含了头文件 Sales_item.h。将它拷贝到你自己的工作目录中。用它编写一个程序，读取一组书籍销售记录，将每条记录打印到标准输出上。
+
+
+
 ### 1.21
-> 读取两个相同的sales_item对象,并输出和
+> 编写程序，读取两个 ISBN 相同的 Sales_item 对象，输出他们的和。
 ```c++
 #include<iostream>
 #include"../Sales_item.h"
@@ -209,6 +281,9 @@ int main(){
     }
 }
 ```
+
+### 1.22
+> 编写程序，读取多个具有相同 ISBN 的销售记录，输出所有记录的和。
 
 ### 1.23
 > 读取多条聚在一起的纪录,统计结果并输出

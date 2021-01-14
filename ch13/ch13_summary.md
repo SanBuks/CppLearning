@@ -38,7 +38,7 @@ f(vector<int>(10)); // 必须显示声明
 	- delete pointer 调用
 	- 临时对象表达式结束时销毁 如 A( A("123") ); 括号内的临时对象拷贝后即销毁
 
-#### 管理拷贝控制操作
+#### 管理拷贝控制
 - 首先判断一个类是否需要自定义析构函数, 如果需要则也需要自定义拷贝构造函数和拷贝赋值运算符
 - 其次若需要自定义拷贝构造函数则也需要自定义拷贝赋值运算符, 未必需要自定义析构函数
 - `=default` 显示要求合成的拷贝控制版本, 内部默认内联, 可以内部仅声明外部加限定防止内联
@@ -154,9 +154,122 @@ A& A::operator=(A rhs){  // 拷贝构造rhs作为一个副本 如果发生错误
 }
 ```
 
+### 2. 两个实例
+#### Message
+```c++
+/* 	
+	Message 与 Folder 是多对多关系, 互相存放对应的指针 set
+	Message 有 从具体Folder对象保存和删除的动作
+	Message 在 拷贝控制过程中注意对应set的更新
+*/
+class Message{
+	friend class Folder;  // Folder 可以直接访问Message的数据
+	friend void swap(Message &, Message &);  // 自定义的交换操作
+private: // 数据成员
+	std::string contents;       // 内容
+	std::set<Folder*> folders;  // 包含所有存有本消息的文件夹
+public:  // 公共成员
+	Message(const std::string &str=""):contents(str){}  // 默认构造函数
+	~Message();  // 析构 注意对应folder对象保存信息的销毁
+	Message(const Message &);  // 拷贝控制 注意对应folder对象保存信息的增加
+	Message &operator=(const Message &);  // 赋值拷贝	
+	Message(Message &&);  // 移动拷贝 更新folder对象可能会抛出异常
+	Message &operator=(Message &&); // 移动赋值 更新folder对象可能会抛出异常
+	
+	void save(Folder &);  // 将本信息添加到指定文件夹中
+	void remove(Folder &); // 将本信息从指定文件夹中删除
+private:  // 工具函数用于拷贝控制	
+	void add_to_Folders(const Message &); // 将本信息添加到包含另外信息的所有文件夹中
+	void remove_from_Folders();  // 将本信息从所有文件夹中删除
+	void move_Folders(Message *);  // 移动folders 
+};
+class Folder{
+private:
+	std::set<Message*> messages;
+public:
+	void addMsg(Message *);
+	void remMsg(Message *);
+};
+```
 
-移动控制永远不会隐式定义为删除, 除非显示声明为default, 但合成不能移动则会定义为删除, 例外有:
-| 删除的移动控制 | 原因 |
+#### StrVec
+```c++
+class StrVec{
+private : // 数据成员
+	std::string *elements;  // 指向第一个元素
+	std::string *first_free;  // 指向第一个空余空间
+	std::string *cap;  // 指向尾后
+	static std::allocator<std::string> alloc;  // 动态内存分配器
+
+public:  // 公共成员
+	StrVec(): elements(nullptr), first_free(nullptr), cap(nullptr){}
+	~StrVec(){ free(); };
+	StrVec(const StrVec &);
+	StrVec &operator=(const StrVec &);
+	StrVec(StrVec &&) noexcept;	
+	StrVec &operator=(StrVec &&) noexcept;
+
+	void push_back(const std::string &);  // 末尾增加元素
+	void push_back(std::string &&); // 末尾增加元素 右值版本
+
+	size_t size() const { return first_free-elements; }
+	size_t capacity() const { return cap-elements; }
+	std::string *begin() const { return elements; }
+	std::string *end() const { return first_free; }
+
+private:  // 工具函数
+	void chk_n_alloc(){ if(size()==capacity()) reallocate(); }
+	std::pair<std::string *, std::string *> alloc_n_copy
+		(const std::string *, const std::string *);  // 分配内存并构造范围内的拷贝
+	void free();  // 释放内存
+	void reallocate(); // 重新分配内存
+```
+
+### 3. 对象移动
+> 移动解决对象被拷贝后就被销毁的性能浪费问题, 旧标准中容器元素必须能拷贝, 新标准中容器元素必须能拷贝或移动
+
+#### 右值与左值
+- 基本定义 : 左值右值描述表达式结果或对象的属性
+	- 左值 : 结果或对象描述的是一个内存空间, 在作用域内持续存在, 可以被赋值使用
+	- 右值 : 结果或对象描述的是一个值, 表达式结束后即被销毁, 不可被赋值使用
+- 左右值引用 : 
+	- 左值引用 : 某一个左值表达式结果或对象的别名 如赋值表达式结果等
+	- 右值引用 : 某一个右值表达式结果或对象的别名 如字面值常量, 取地址符表达式等
+> 右值引用的对象即将被销毁, 没有其他用户能够使用则导致右值引用的代码可以随意 '窃取' 该对象的数据
+```c++
+int a=3;  // a 是一个变量, 是左值
+int &b=a; // b 是一个左值引用
+int &&c=3;  // c 是一个右值引用
+int &&d=c;  // 错误, c 作为变量表达式结果为左值
+```
+
+- 右值绑定左值 : 使用`int &&d=std::move(c);`可强制绑定到左值, 绑定后c对象除了被赋值和销毁不能再被使用或做与内容相关的操作(已被窃取, 内容不完整)
+
+#### 移动拷贝控制
+- 移动拷贝构造 : `A(A &&a) noexcept : p1(a.p1), p2(a.p2){ a.p1=a.p2=nullptr; }`
+	- 型参非const, 因为右值被`窃取`数据, 一定会发生状态改变
+	- 资源移动一般不会分配内存, 则不会发生异常, 通过`noexcept`告诉编译器, 防止为了异常安全而只调用拷贝构造
+	- 资源移动后需要将型参置于能够被析构或有效状态 ( 能被重新赋值 )
+
+- 移动赋值构造 :  `A& operator=(A &&rhs) noexcept{ if(this!=&rhs){...} return *this;}`
+	- 需要检查自赋值情况, 防止使用`std::move`产生同源现象
+
+#### 合成的移动控制
+- 如果类自定义了任何一个拷贝控制, 则不会合成移动控制, 如果没有定义且每个非static数据成员都可移动(有对应移动操作)则会合成
+- 移动控制永远不会隐式定义为删除, 除非显示声明为default, 但有数据成员不能被移动则会定义为删除, 除此之外还有以下情况 :
+| 删除的合成移动控制 | 原因 |
 | --- | --- |
-| 移动构造函数 | 未定义拷贝构造且合成的移动构造不能移动<br/>成员移动构造函数删除<br/>成员析构函数删除 |
+| 移动构造函数 | 成员移动构造函数删除<br/>析构函数删除 |
 | 移动赋值运算符 | 成员移动赋值运算符删除<br/>类成员是const或引用 |
+
+#### 其他
+- 拷贝控制和移动控制会发生重载, 没有移动控制使用std::move会调用拷贝控制
+- 三五规则 : 自定义了五个中的一个函数则需要定义其他四个函数
+- 移动迭代器 : 解引用产生左值变为产生右值, 通过`make_move_iterator(it)`转换为移动迭代器
+- 成员函数也可以通过定义右值引用参数提升性能
+- 引用限定符 : `str1+str2="123";` 对于右值进行了赋值, 为了限制该行为在自定义类中出现可以通过引用限定符来解决
+```c++
+A& operator(const A &) &;// 限制只有左值可以使用赋值运算符
+A func() const &; // const 出现在限定符之前, 且限定符和const不能修饰static成员函数
+A func() cosnt &&; // 同名且同参数类型的函数要么都加上引用限定或者都不加上引用限定
+```

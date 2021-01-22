@@ -1,0 +1,255 @@
+
+cppreference.com
+Create account	
+
+    Page
+    Discussion
+
+    View
+    Edit
+    History
+
+ads via Carbon
+SonarQube static analysis: powerful, fast and accurate - out of the box! See how it can help you and your team
+ads via Carbon
+std::map
+ 
+C++
+ 
+Containers library
+ 
+std::map
+ 
+Defined in header <map>
+		
+template<
+
+    class Key,
+    class T,
+    class Compare = std::less<Key>,
+    class Allocator = std::allocator<std::pair<const Key, T> >
+> class map;
+	(1) 	
+namespace pmr {
+
+    template <class Key, class T, class Compare = std::less<Key>>
+    using map = std::map<Key, T, Compare,
+                         std::pmr::polymorphic_allocator<std::pair<const Key,T>>>
+}
+	(2) 	(since C++17)
+		
+
+std::map is a sorted associative container that contains key-value pairs with unique keys. Keys are sorted by using the comparison function Compare. Search, removal, and insertion operations have logarithmic complexity. Maps are usually implemented as red-black trees.
+
+Everywhere the standard library uses the Compare requirements, uniqueness is determined by using the equivalence relation. In imprecise terms, two objects a and b are considered equivalent (not unique) if neither compares less than the other: !comp(a, b) && !comp(b, a).
+
+std::map meets the requirements of Container, AllocatorAwareContainer, AssociativeContainer and ReversibleContainer.
+Member types
+Member type 	Definition
+key_type 	Key
+mapped_type 	T
+value_type 	std::pair<const Key, T>
+size_type 	Unsigned integer type (usually std::size_t)
+difference_type 	Signed integer type (usually std::ptrdiff_t)
+key_compare 	Compare
+allocator_type 	Allocator
+reference 	Allocator::reference 	(until C++11)
+value_type& 	(since C++11)
+const_reference 	Allocator::const_reference 	(until C++11)
+const value_type& 	(since C++11)
+pointer 	Allocator::pointer 	(until C++11)
+std::allocator_traits<Allocator>::pointer 	(since C++11)
+const_pointer 	Allocator::const_pointer 	(until C++11)
+std::allocator_traits<Allocator>::const_pointer 	(since C++11)
+iterator 	LegacyBidirectionalIterator
+const_iterator 	Constant LegacyBidirectionalIterator
+reverse_iterator 	std::reverse_iterator<iterator>
+const_reverse_iterator 	std::reverse_iterator<const_iterator>
+node_type(since C++17) 	a specialization of node handle representing a container node
+insert_return_type(since C++17) 	type describing the result of inserting a node_type, a specialization of
+
+template <class Iter, class NodeType> struct /*unspecified*/ {
+    Iter     position;
+    bool     inserted;
+    NodeType node;
+};
+
+instantiated with template arguments iterator and node_type.
+Member classes
+value_compare
+	compares objects of type value_type
+(class)
+Member functions
+(constructor)
+	constructs the map
+(public member function)
+(destructor)
+	destructs the map
+(public member function)
+operator=
+	assigns values to the container
+(public member function)
+get_allocator
+	returns the associated allocator
+(public member function)
+Element access
+at
+(C++11)
+	access specified element with bounds checking
+(public member function)
+operator[]
+	access or insert specified element
+(public member function)
+Iterators
+begin cbegin
+(C++11)
+	returns an iterator to the beginning
+(public member function)
+end cend
+(C++11)
+	returns an iterator to the end
+(public member function)
+rbegin crbegin
+(C++11)
+	returns a reverse iterator to the beginning
+(public member function)
+rend crend
+(C++11)
+	returns a reverse iterator to the end
+(public member function)
+Capacity
+empty
+	checks whether the container is empty
+(public member function)
+size
+	returns the number of elements
+(public member function)
+max_size
+	returns the maximum possible number of elements
+(public member function)
+Modifiers
+clear
+	clears the contents
+(public member function)
+insert
+	inserts elements or nodes (since C++17)
+(public member function)
+insert_or_assign
+(C++17)
+	inserts an element or assigns to the current element if the key already exists
+(public member function)
+emplace
+(C++11)
+	constructs element in-place
+(public member function)
+emplace_hint
+(C++11)
+	constructs elements in-place using a hint
+(public member function)
+try_emplace
+(C++17)
+	inserts in-place if the key does not exist, does nothing if the key exists
+(public member function)
+erase
+	erases elements
+(public member function)
+swap
+	swaps the contents
+(public member function)
+extract
+(C++17)
+	extracts nodes from the container
+(public member function)
+merge
+(C++17)
+	splices nodes from another container
+(public member function)
+Lookup
+count
+	returns the number of elements matching specific key
+(public member function)
+find
+	finds element with specific key
+(public member function)
+contains
+(C++20)
+	checks if the container contains element with specific key
+(public member function)
+equal_range
+	returns range of elements matching a specific key
+(public member function)
+lower_bound
+	returns an iterator to the first element not less than the given key
+(public member function)
+upper_bound
+	returns an iterator to the first element greater than the given key
+(public member function)
+Observers
+key_comp
+	returns the function that compares keys
+(public member function)
+value_comp
+	returns the function that compares keys in objects of type value_type
+(public member function)
+Non-member functions
+operator==operator!=operator<operator<=operator>operator>=operator<=>
+(removed in C++20)(removed in C++20)(removed in C++20)(removed in C++20)(removed in C++20)(C++20)
+	lexicographically compares the values in the map
+(function template)
+std::swap(std::map)
+	specializes the std::swap algorithm
+(function template)
+erase_if(std::map)
+(C++20)
+	Erases all elements satisfying specific criteria
+(function template)
+Deduction guides (since C++17)
+Example
+Run this code
+
+#include <iostream>
+#include <map>
+#include <string>
+#include <string_view>
+ 
+void print_map(std::string_view comment, const std::map<std::string, int>& m)
+{
+    std::cout << comment;
+    for (const auto& [key, value] : m) {
+        std::cout << key << " = " << value << "; ";
+    }
+    std::cout << "\n";
+}
+ 
+int main()
+{
+    // Create a map of three strings (that map to integers)
+    std::map<std::string, int> m { {"CPU", 10}, {"GPU", 15}, {"RAM", 20}, };
+ 
+    print_map("Initial map: ", m);
+ 
+    m["CPU"] = 25;  // update an existing value
+    m["SSD"] = 30;  // insert a new value
+ 
+    print_map("Updated map: ", m);
+}
+
+Output:
+
+Initial map: CPU = 10; GPU = 15; RAM = 20; 
+Updated map: CPU = 25; GPU = 15; RAM = 20; SSD = 30;
+
+    Support usRecent changesFAQOffline version 
+
+    What links hereRelated changesUpload fileSpecial pagesPrintable versionPermanent linkPage information 
+
+    In other languages
+
+    DeutschEspañolFrançaisItaliano日本語PolskiPortuguêsРусский中文 
+
+    This page was last modified on 14 January 2021, at 08:38. 
+
+    Privacy policy About cppreference.com Disclaimers 
+
+    Powered by MediaWiki Powered by GeSHi Hosted by Tiger Technologies
+

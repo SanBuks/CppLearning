@@ -177,7 +177,7 @@ int main(){
 
 ### 2.19*
 > 说明指针与引用主要区别
-	
+
 1. 指针是对象, 引用是别名:
 2. 指针可以无需初始化, 可以多次赋值 而 引用必须初始化绑定
 3. 指针通过\*来访问对象, 引用本身即对象
@@ -226,4 +226,213 @@ long *lp = &i;  //int * 无法转换为 long *
 int* ip, i, &r = i; // ip:int* 	| i:int 	| r:i的引用
 int i, *ip = 0;		// i:int  	| ip:int*
 int* ip, ip2;		// ip:int* 	| ip2:int
+```
+
+### 2.26
+> 下面哪些语句是合法的？如果不合法，请说明为什么？
+```c++
+const int buf;      // 非法, 需要初始化
+int cnt = 0;        // 合法
+const int sz = cnt; // 合法
+++cnt; ++sz;        // 非法, const对象不可改变
+```
+
+### 2.27
+> 下面的哪些初始化是合法的？请说明原因。
+```c++
+int i = -1, &r = 0;         // 非法, 引用r需绑定到一个左值
+int *const p2 = &i2;        // i2不能是const
+const int i = -1, &r = 0;   // 合法, 底层引用初始化对象var可以是表达式结果, 非常量对象, 字面值, 不同类型对象
+const int *const p3 = &i2;  // 合法
+const int *p1 = &i2;        // 合法
+const int &const r2;        // 非法, 引用非对象没有顶层之说
+const int i2 = i, &r = i;   // 合法
+```
+
+### 2.28
+> 说明下面的这些定义是什么意思，挑出其中不合法的。
+```c++
+int i, *const cp;       // 非法, cp是顶层const需要初始化
+int *p1, *const p2;     // 非法, 同上
+const int ic, &r = ic;  // 非法, ic是顶层const需要初始化
+const int *const p3;    // 非法, p3是顶层const需要初始化
+const int *p;           // 合法. p是底层const可以不初始化
+```
+
+### 2.29
+> 假设已有上一个练习中定义的那些变量，则下面的哪些语句是合法的？请说明原因。
+```c++
+i = ic;     // 合法, 顶层被拷贝不需要i是顶层
+p1 = p3;    // 非法, p3是底层const, 被拷贝时需要p1也是底层const
+p1 = &ic;   // 非法, ic是const, 取地址后被拷贝需要p1是底层const
+p3 = &ic;   // 非法, p3是顶层const, 不可被改变
+p2 = p1;    // 非法, 同上
+ic = *p3;   // 非法, 同上
+```
+
+### 2.30
+> 对于下面的这些语句，请说明对象被声明成了顶层const还是底层const？
+```c++
+const int v2 = 0; int v1 = v2;  // v2:顶层 v1:双非
+int *p1 = &v1, &r1 = v1;		// p1:双非 r1:双非
+const int *p2 = &v2, *const p3 = &i, &r2 = v2; // p2:底层 p3:双层 r2:底层
+```
+
+### 2.31
+> 假设已有上一个练习中所做的那些声明，则下面的哪些语句是合法的？请说明顶层const和底层const在每个例子中有何体现。
+```c++
+r1 = v2; // 合法
+p1 = p2; // 非法, p2底层需要p1也是底层
+p2 = p1; // 合法, p1双非可以被拷贝给底层p2
+p1 = p3; // 非法
+p2 = p3; // 合法, p3是双层可以拷贝给底层p2
+```
+
+### 2.32
+> 下面的代码是否合法？如果非法，请设法将其修改正确。
+```c++
+int null=0, *p=null;
+// 非法 int null=0, *p=nullptr;
+```
+
+### 2.33
+> 利用本节定义的变量，判断下列语句的运行结果。
+
+### 2.34
+> 基于上一个练习中的变量和语句编写一段程序，输出赋值前后变量的内容，你刚才的推断正确吗？如果不对，请反复研读本节的示例直到你明白错在何处为止。
+```c++
+#include <iostream>
+int main(){
+	int i=0, &r=i;
+	const int ci=i, &cr=ci;
+	auto a=r;
+	auto b=ci;
+	auto c=cr;
+	auto d=&i;
+	auto e=&ci;
+	auto &g=ci;
+
+	a=42; // 正确, a : int
+	b=42; // 正确, b : int, 乎略顶层const 
+	c=42; // 正确, c : int, 乎略顶层const, 以引用绑定类型为准
+	d=42; // 非法, d : int *, int需要强制类型转化为int* 
+	e=42; // 非法, e : const int *, 同上
+	g=42; // 非法, g : const int &, 指向常量的引用无法改变值
+	return 0;
+/*
+test.cpp:16:4: error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
+  d=42; // 非法, d : int *, int需要强制类型转化为int*
+    ^~
+test.cpp:17:4: error: invalid conversion from ‘int’ to ‘const int*’ [-fpermissive]
+  e=42; // 非法, e : const int *, 同上
+    ^~
+test.cpp:18:4: error: assignment of read-only reference ‘g’
+  g=42; // 非法, g : const int &, 指向常量的引用无法改变值
+*/
+}
+```
+
+### 2.35
+> 判断下列定义推断出的类型是什么，然后编写程序进行验证。
+```c++
+const int i = 42;  	
+auto j = i; const auto &k = i; auto *p = &i;
+// j : int | k : const int & | p : const int * 
+const auto j2 = i, &k2 = i;
+// j2 : const int | k2 : const int &
+```
+
+### 2.36
+> 关于下面的代码，请指出每一个变量的类型以及程序结束时它们各自的值。
+```c++
+int a = 3, b = 4;
+decltype(a) c = a;  // c : int | c=3
+decltype((b)) d = a; // d : int & | a=3
+++c;  // c=4
+++d;  // d=4
+// a=4
+```
+
+
+### 2.37
+> 赋值是会产生引用的一类典型表达式，引用的类型就是左值的类型。也就是说，如果 i 是 int，则表达式 i=x 的类型是 int&。根据这一特点，请指出下面的代码中每一个变量的类型和值。
+```c++
+int a = 3, b = 4;
+decltype(a) c = a;  // c : int | c=3
+decltype(a = b) d = a;  // d : int & | d=a=b=4
+```
+
+### 2.38*
+> 说明由decltype 指定类型和由auto指定类型有何区别。请举一个例子，decltype指定的类型与auto指定的类型一样；再举一个例子，decltype指定的类型与auto指定的类型不一样。
+
+decltype结果类型与表达式形式密切相关 :
+	1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
+	3. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
+	4. auto 保留数组元素指针(除非用 auto it = &array 指向数组 或 auto &it=array), decltype()保留数组类型
+
+### 2.39
+> 编译下面的程序观察其运行结果，注意，如果忘记写类定义体后面的分号会发生什么情况？记录下相关的信息，以后可能会有用。
+```c++
+struct Foo { /* 此处为空  */ } // 注意：没有分号
+int main()
+{
+    return 0;
+}
+/*
+error: expected ‘;’ after struct definition
+ struct Foo { /* 此处为空  */ } 
+*/
+```
+
+### 2.40
+> 根据自己的理解写出 Sales_data 类，最好与书中的例子有所区别。
+```c++
+struct Sales_data{
+	std::string bookNo;
+	unsigned units_sold=0;
+	double revenue=0.0;
+	double price=0.0;
+};
+```
+
+### 2.41
+> 使用你自己的Sale_data类重写1.5.1节（第20页）、1.5.2节（第21页）和1.6节（第22页）的练习。眼下先把Sales_data类的定义和main函数放在一个文件里。
+
+### 2.42
+> 根据你自己的理解重写一个Sales_data.h头文件，并以此为基础重做2.6.2节（第67页）的练习。
+```c++
+// Sales_data.h
+# ifndef SALES_DATA_H
+# define SALES_DATA_H
+#include <string>
+struct Sales_data{
+	std::string bookNo;
+	unsigned units_sold=0;
+	double revenue=0.0;
+};
+# endif
+
+//test.cpp
+#include <iostream>
+#include "Sales_data.h"
+using std::string;
+using std::cin;
+using std::cout;
+int main()
+{
+	Sales_data d1, d2, d3;
+	cin>>d1.bookNo>>d1.units_sold>>d1.revenue;
+	cin>>d2.bookNo>>d2.units_sold>>d2.revenue;
+	if(d1.bookNo==d2.bookNo){
+		d3.bookNo=d1.bookNo;
+		d3.units_sold=d1.units_sold+d2.units_sold;
+		d3.revenue=d1.revenue+d2.revenue;
+		cout<<d3.bookNo<<" "<<d3.units_sold<<" "<<d3.revenue<<"\n";
+	}else{
+		cout<<"bookNo must be same !\n";	
+	}
+	return 0;
+}
+
+// 其余略
 ```

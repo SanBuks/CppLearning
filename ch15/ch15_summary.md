@@ -222,15 +222,13 @@ struct Derived : Base {
 - 默认, 拷贝和移动构造函数不会被继承, 派生类会自己合成
 - 继承的构造函数不能视为自定义构造函数, 类仍会合成默认构造函数
 
+### 4. 其他
+- 容器中一般通过存放基类的指针实现多态
+- 为了调用简洁性一般实现类的虚拷贝
+```c++
+virtual Quote *clone()const &{ return new Quote(*this); }
+virtual Quote *clone()const &&{ return new Quote(std::move(*this)); }
 
-
-
-
-
-
-
-
-
-
-
-
+addItem(const Quote &sale){ insert(shared_ptr<Quote>( sale.clone() ) ); } 
+addItem(Quote &&sale){ insert(shared_ptr<Quote>( std::move(sale).clone() ) ); };
+```

@@ -459,3 +459,215 @@ double Basket::total_receipt(std::ostream &os) const{
 	return sum;
 }
 ```
+
+### 15.31
+> 已知 s1, s2 , s3 , 和 s4 都是 string，判断下面的表达式分别创建了什么样的对象：
+```c++
+ Query(s1) | Query(s2) & ~Query(s3);
+ // ( OrQuery , NotQuery) -> AndQuery
+ Query(s1) | (Query(s2) & ~Query(s3));
+ // ( WordQuery , AndQuery) -> OrQuery
+(Query(s1) & (Query(s2)) | (Query(s3) & Query(s4)));
+// ( AndQuery , AndQuery) -> OrQuery
+```
+
+### 15.32
+> 当一个 Query 类型的对象被拷贝、移动、赋值或销毁时，将分别发生什么？
+
+Query 只含有指向 Query\_base的智能指针, 
+拷贝时指针计数 +1 
+移动时指针不改变计数
+销毁时计数-1, 若为零则销毁Query\_base对象
+
+### 15.33
+> 当一个 Query_base 类型的对象被拷贝、移动赋值或销毁时，将分别发生什么？
+
+Query\_base 对象及其派生类对象的数据成员分别为 
+WordQuery : string 保存查询单词, 是组合查询字符串的基础 
+NotQuery : query 保存一元的Query类(封装了其他Query\_base对象指针)
+BinaryQuery : lhs rhs 保存二元的Query类( 类似树, 封装了孩子的指针 )
+
+在拷贝移动时Query对象被拷贝, 即其他Query对象的指针被拷贝, 即对象关系被拷贝
+在赋值销毁时Query对象被销毁或者计数-1
+
+### 15.34
+> 针对图15.3构建的表达式：
+
+(a) 例举出在处理表达式的过程中执行的所有构造函数。
+(b) 例举出 cout << q 所调用的 rep。
+(c) 例举出 q.eval() 所调用的 eval。
+
+```c++
+Query q = Query("fiery") & Query("bird") | Query("wind");
+/*
+逻辑上遵循树顺序结构
+1. consturctor : 
+WordQuery temp1("fiery");
+WordQuery temp2("bird");
+AndQuery temp3(temp1, temp2, "&");
+WordQuery temp4("wind");
+OrQuery temp5(temp3, temp4, "|");
+
+2. q.rep() :
+						   temp5->rep()
+(           temp3->rep()        | temp4->rep())
+( (temp1->rep() & temp2->rep()) | temp4->rep())
+(        (fiery & bird)         | temp4->rep())
+(        (fiery & bird)         | wind)
+
+3. q.eval() :
+                        temp5->eval()
+(           temp3->eval()        | temp4->eval())
+((temp1->eval() & temp2->eval()) | set(wind))
+(  ( set(fiery) & set(bird) )    | set(wind))
+
+*/
+```
+
+### 15.35
+> 实现 Query 类和 Query_base 类，其中需要定义rep 而无须定义 eval。
+```c++
+//Query.h
+#pragma once
+#include "Query_base.h"
+
+class Query{
+	friend Query operator~(const Query &);
+	friend Query operator|(const Query &, const Query &);
+	friend Query operator&(const Query &, const Query &);
+public: 
+	Query(const std::string &);
+	QueryResult eval(const TextQuery &t) const { return q->eval(t); }
+	std::string rep() const { return q->rep(); }
+private:
+	Query(std::shared_ptr<Query_base> query):q(query){}
+	std::shared_ptr<Query_base> q;  // 指向继承体系中Query
+};
+
+Query::Query(const string &s): q(new WordQuery(s)){}
+
+ostream &operator<<(ostream &os, const Query &query){ return os<<query.rep(); }
+
+// Query_base.h
+#pragma once
+#include "TextQuery/TextQuery.h"
+#include "UsingTools.h"
+
+class Query;
+class Query_base{
+	friend class Query;  // 包装类 统一接口
+protected:
+	virtual ~Query_base()=default;
+private:
+	virtual QueryResult eval(const TextQuery&) const =0;
+	virtual std::string rep() const =0;
+};
+```
+
+### 15.36
+> 在构造函数和 rep 成员中添加打印语句，运行你的代码以检验你对本节第一个练习中(a)、(b)两小题的回答是否正确。
+```bash
+# Query q = Query("fiery") & Query("bird") | Query("wind");
+WordQuery constructor() : wind
+WordQuery constructor() : bird
+WordQuery constructor() : fiery
+AndQuery constructor() : (fiery & bird)
+OrQuery constructor() : ((fiery & bird) | wind)
+
+# 同一表达式扫描后, 具体的对象求值顺序是未定义的, 运算符处理的顺序是固定的
+AndQuery 必定在 OrQuery之前, wind和bird之后
+
+BinaryQuery rep() : |
+WordQuery rep() : wind
+BinaryQuery rep() : &
+WordQuery rep() : bird
+WordQuery rep() : fiery
+```
+
+### 15.37
+> 如果在派生类中含有 shared_ptr<Query_base> 类型的成员而非 Query 类型的成员，则你的类需要做出怎样的改变？
+```c++
+NotQuery(shared_ptr<Query_base> q) : query(q){}  // 1. 改变构造函数接口
+Query operator~(const Query &operand){           // 2. 改变友元中的实现
+	return shared_ptr<Query_base>(new NotQuery(operand.q));
+}
+class Query_base{
+public:
+	// 3. 继承类可以通过shared_ptr调用rep和eval, 必须让rep 和 eval 开放 
+	// Query_base 中可以不存放Query实体, 实现impl
+	virtual QueryResult eval(const TextQuery&) const =0;
+	virtual std::string rep() const =0;
+	...
+}
+```
+
+### 15.38
+> 下面的声明合法吗？如果不合法，请解释原因;如果合法，请指出该声明的含义。
+```c++
+BinaryQuery a = Query("fiery") & Query("bird");  // 不合法
+// 返回 shared_ptr<Query_base>(new AndQuery(lhs, rhs)); 构造Query对象
+AndQuery b = Query("fiery") & Query("bird");  // 不合法, 同上
+
+OrQuery c = Query("fiery") & Query("bird");   // 不合法
+// 返回 shared_ptr<Query_base>(new OrQuery(lhs, rhs)); 构造Query对象
+```
+
+### 15.39
+> 实现 Query 类和　Query_base 类，求图15.3中表达式的值并打印相关信息，验证你的程序是否正确。
+
+参考 Query代码
+
+### 15.40
+> 在 OrQuery 的 eval 函数中，如果 rhs 成员返回的是空集将发生什么？
+```c++
+auto ret_lines=make_shared<set<size_t>>(left.begin(), left.end()); 
+ret_lines->insert(right.begin(), right.end());  // rhs 返回空集 则插入空集
+```
+
+### 15.41
+> 重新实现你的类，这次使用指向 Query_base 的内置指针而非 shared_ptr。请注意，做出上述改动后你的类将不能再使用合成的拷贝控制成员。
+
+略
+
+### 15.42
+> 从下面的几种改进中选择一种，设计并实现它:
+
+(a) 按句子查询并打印单词，而不再是按行打印。
+(b) 引入一个历史系统，用户可以按编号查阅之前的某个查询，并可以在其中添加内容或者将其余其他查询组合。
+(c) 允许用户对结果做出限制，比如从给定范围的行中跳出匹配的进行显示。
+
+```c++
+// 选择 (b)
+// Query_base.h
+class BetweenQuery: public Query_base{
+	friend Query get_between(size_t , size_t , const Query &);
+private:
+	BetweenQuery(size_t l, size_t h, shared_ptr<Query_base> q): low(l), high(h), query(q){}
+
+	string rep() const override; 
+	QueryResult eval(const TextQuery &) const override;
+	size_t low; 
+	size_t high;
+	shared_ptr<Query_base> query;
+};
+// Query_base.cpp
+QueryResult BetweenQuery::eval(const TextQuery &text) const {
+	auto result=query->eval(text);
+	auto ret_lines=make_shared<set<size_t>>(); 
+	for(auto beg=result.begin(); beg!=result.end(); ++beg){
+		if( (low>high) || (*beg>=low && *beg<=high) )
+			ret_lines->insert(*beg);
+	}
+	return QueryResult(rep(), ret_lines, result.get_file());
+}
+
+string BetweenQuery::rep() const {
+	ostringstream oss;
+	oss<<"(Between("<<query->rep()<<")["<<low<<","<<high<<"])";
+	return oss.str();
+}
+
+Query get_between(size_t low, size_t high, const Query &operand){
+	return shared_ptr<Query_base>(new BetweenQuery(low, high, operand.q));
+}
+```

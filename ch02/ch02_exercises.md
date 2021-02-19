@@ -25,7 +25,7 @@ std::cout << i - u << std::endl;  //0
 std::cout << u - i << std::endl;  //0
 ```
 
-### 2.05
+### 2.05*
 > 指出下述字面值的数据类型并说明每一组内几种字面值的区别：
 ```c++
 // 'a', L'a', "a", L"a" 
@@ -212,7 +212,7 @@ if (*p) // 如果p指向的int数非零则执行
 1. raw pointer不行, 要是能轻易做到的话C语言就不容易出内存方面的bug
 2. smart pointer可以, shared_ptr和weak_ptr就可以分别用  shared_ptr::operator bool() 和 weak_ptr::expired()判断
 
-### 2.24
+### 2.24*
 > 在下面这段代码中为什么 p 合法而 lp 非法？
 ```c++
 int i = 42;
@@ -366,9 +366,9 @@ decltype(a = b) d = a;  // d : int & | d=a=b=4
 > 说明由decltype 指定类型和由auto指定类型有何区别。请举一个例子，decltype指定的类型与auto指定的类型一样；再举一个例子，decltype指定的类型与auto指定的类型不一样。
 
 decltype结果类型与表达式形式密切相关 :
-	1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
-	3. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
-	4. auto 保留数组元素指针(除非用 auto it = &array 指向数组 或 auto &it=array), decltype()保留数组类型
+ 	1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
+ 	2. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
+ 	3. auto 保留数组元素指针(除非用 auto it = &array 指向数组), decltype()保留数组类型
 
 ### 2.39
 > 编译下面的程序观察其运行结果，注意，如果忘记写类定义体后面的分号会发生什么情况？记录下相关的信息，以后可能会有用。

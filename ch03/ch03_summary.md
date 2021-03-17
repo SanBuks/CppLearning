@@ -7,7 +7,7 @@
 
 #### string 基本用法
 
-| string用法 `<string>`                                          | 解释                                                       |
+| string用法 `<string>`                                        | 解释                                                       |
 | ------------------------------------------------------------ | ---------------------------------------------------------- |
 | string s1;                                                   | 默认初始化                                                 |
 | string s1("123");<br/>string s1(s2);<br/>string s1(20, 'c'); | 直接初始化                                                 |
@@ -17,7 +17,7 @@
 | s1[0];                                                       | 返回下标为0的引用                                          |
 | s1+s2;                                                       | 忽略`\0`连接两个字符串, 返回新创的string对象               |
 | s1.size(); s1.empty()                                        | 查询相关信息, 其中size() 返回 string::size_type 无符号类型 |
-| s1!=s2; s1==s2; ( <, >, <=, >= )                             | 按字典序和个数比较                                         |
+| s1!=s2; s1==s2; ( <, >, <=, >= )                             | 按字典序再按个数比较                                       |
 
 > 注意, `auto a="123"+"234";`非法, 不能将两个字面值常量直接相加
 
@@ -47,7 +47,7 @@ for(decltype(str.size()) index=0; index!=str.size(); ++index)
 | vector用法 \<string> | 解释 |
 | --- | --- |
 | vector\<T> v1; | 默认初始化 |
-| vector\<T> v1(v2);<br/>vector\<T> v1(n);<br/>vector\<T> v1(n, val);<br/>vector\<T> v1{val1, val2, val3}; | 直接初始化<br/>指定数量默认初始化(根据类型不同有不同的初识值)<br/>列表初始化 |
+| vector\<T> v1(v2)/(it1, it2)<br/>vector\<T> v1(n);<br/>vector\<T> v1(n, val);<br/>vector\<T> v1{val1, val2, val3}; | 拷贝初始化<br/>直接初始化<br/>指定数量默认初始化(根据类型不同有不同的初识值)<br/>列表初始化 |
 | vector\<T> v1=v2;<br/>vector\<T> v1={val1, val2, val3}; | 拷贝初始化 |
 | v1.push\_back(val); | 在末尾插入元素 |
 | v1[0]; | 返回下标为0的引用 |
@@ -56,7 +56,7 @@ for(decltype(str.size()) index=0; index!=str.size(); ++index)
 
 - vector 是模板类, 根据类型进行实例化, 默认初始化时会对各个元素进行值初始化
 - `vector<string> a{10};` 列表初始化, 先按元素初识值列表初始化 如果无法执行则按指定数量初始化
-- range-for语句内不应该改变容器大小
+- range-for语句或其他循环语句内不应该改变容器大小
 
 ### 4. iterator
 
@@ -95,7 +95,7 @@ typename std::vector<T>::const_iterator find(const std::vector<T> &vec, const T 
 - 数组元素一定是一个对象, 不存在引用的数组
 - 无法被拷贝,赋值但可用于for range语句
 ```c++
-const char str[7]="123";  // 存在字符串常量到常量字符数组的转化, 注意大小一定容下
+const char str[7]="123";  // 存在字符串常量到常量字符数组的转化, 注意大小一定容下('\0')
 ```
 
 - 理解复杂声明 : 从内至外, 从右至左
@@ -105,7 +105,8 @@ int (*ptr)[10];  // ptr是一个指针, 指向含有10个int的数组
 ```
 
 #### 数组与指针
-- `int *beg=begin(array_name);` 获取首元素指针 `int \*end=end(array_name);` 获取尾后指针 包含在 `<iterator>`头文件中
+- `int *beg=begin(array_name);` 获取首元素指针 `<iterator>` 
+- `int \*end=end(array_name);` 获取尾后指针 `<iterator>`
 - 指针相减类型为ptrdiff_t, 带符号类型与迭代器的 difference_type 类似
 - 不同类型指针不能比较, 空指针相减为0
 
@@ -120,16 +121,19 @@ std::cout<<p[-1]; // 指向 元素 2 内置数组下表类型可以为负号
 
 #### C风格字符
 ```c++
-const char p[]={'a', 'b', 'c', '\0'}; // Null terminated 字符数组
+const char p[]={'a', 'b', 'c', '\0'}; // 1. Null terminated 字符数组
 // const char p[]="abc";
 
-const char *q=p;  // 字符数组转换成string
-
+const char *q=p;
 std::string str(q, q+strlen(q));
+// 2. 字符数组转换成string
 // std::string str(std::begin(p), std::end(p));
 std::cout<<str<<std::endl;
 
-const char *cstr=str.c_str(); // string转换成字符数组 注意是const 防止string发生变化, 最好拷贝一份
+const char *cstr=str.c_str(); 
+// 3. string转换成字符数组指针 注意是const 防止string发生变化, 最好拷贝一份
+char *cstrtemp = new char [strlen(str.c_str())+1];
+strcpy(cstrtemp, str.c_str());
 std::cout<<cstr<<std::endl;
 ```
 

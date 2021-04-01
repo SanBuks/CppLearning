@@ -36,7 +36,7 @@ std::cout << u - i << std::endl;  //0
 (char ; wchar_t ; const char* ; const wchar_t*)
 // 10, 10u, 10L, 10uL, 012, 0xC 
 (int ; unsigned ; long ; unsigned long ; int 八进制 ; int 十六进制)
-// 3.14, 3.14f, 3.14L 
+// 3.14, 3.14F, 3.14L 
 (double ; float ; long double)
 // 10, 10u, 10., 10e-2 
 (int ; unsigned ; double ; double)
@@ -372,7 +372,7 @@ decltype(a = b) d = a;  // d : int & | d=a=b=4
 decltype结果类型与表达式形式密切相关 :
  	1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
  	2. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
- 	3. auto 保留数组元素指针(除非用 auto it = &array 指向数组), decltype()保留数组类型
+ 	3. auto 保留数组元素指针(除非用 auto &it = array 指向数组), decltype()保留数组类型
 
 ### 2.39
 > 编译下面的程序观察其运行结果，注意，如果忘记写类定义体后面的分号会发生什么情况？记录下相关的信息，以后可能会有用。

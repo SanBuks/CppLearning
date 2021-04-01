@@ -31,6 +31,7 @@ char &operator[](std::size_t posi) {
 }
 // 反过来不可以, 因为 const 成员函数不应该去掉 *this 的 const 限定
 ```
+
 7. 定义对象时候一定赋予初识值完成初始化
 	- 尽量使用初识值列表初始化 
 	- 初识值列表按声明顺序初始化, 基类成员先被初始化
@@ -46,6 +47,7 @@ inline A &getA(){ // singleton保证初始化顺序
 // b.cpp
 A aa=getA();
 ```
+
 	- 会产生多线程不安全, 需要在单线程启动阶段手工调用所有 return reference 函数
 ## 2. 构造,析构和赋值运算
 1. 空类自动创建 default ctor, dctor, copy ctor 和 copy = , 调用时才自动创建
@@ -54,7 +56,7 @@ A aa=getA();
 2. 阻止copy
 	- 将相关操作设为private, 且不实现, 类外无法访问, 类中产生链接错误
 	- 或者继承 Uncopyable类
-	- C11 =deleted;
+	- C++11 `=deleted` ;
 ```c++
 class Uncopyable{
 protected: // 避免被创建
@@ -66,6 +68,7 @@ private:
 };
 class A : private Uncopyable{...}; // private 蕴含 基于某类机制上实现出来
 ```
+
 3. 派生类对象由基类(实现多态的基类)指针删除, 如果基类析构函数是non-virtual结果未定义
 	- 可能派生类数据没有销毁, 产生局部销毁
 	- 非实现多态的基类析构函数如果是virtual反而增加机器字长大小的vptr
@@ -79,6 +82,7 @@ public:
 };
 Base :: ~Base(){} // 注意增加析构函数的定义
 ```
+
 5. 析构函数不鼓励抛出异常, 因为容器销毁时会发生多个异常抛出产生未定义情况
 	- 捕获异常, 记录信息, 然后终止程序
 	- 吞下异常, 记录信息
@@ -95,6 +99,7 @@ private:
 	static std::string createLogString();
 };
 ```
+
 7. operator=写法
 	- return \*this;
 	- 处理自赋值 : 先复制再删除 或者 copy and swap
@@ -109,3 +114,39 @@ D& D::operator=(const D &rhs){
 	return *this;
 }
 ```
+
+## 3. 对象管理资源
+1. RAII(Resource Acquisition Is Initialization) 
+	- `auto_ptr` 被复制时会被置空, C++11中被 `unique_ptr` 取代
+	- `shared_ptr` 等智能指针对于默认对内置数组调用 delete 会产生错误
+	- `delete [] arrname;`  一般对数组名不进行别名声明, 否则一定检查是否要加上[], 或者尽量用vector
+```c++
+unique_ptr<int[]> up(new int[10]()); //可以通过unique_ptr管理手动分配的数组
+shared_ptr<int> sp(new int[10](), // 可以通过shared_ptr管理手动分配的数组
+	[](int *p) { delete [] p;} ); // 但是必须提供删除器
+```
+
+2. 资源管理类的拷贝行为
+	- 禁止复制
+	- 引用计数 (shared\_ptr)
+	- 深复制
+	- 转移资源 (unique\_ptr)
+```c++
+class Lock{
+public:
+	Lock(Mutex *pm) : mutexPtr(pm, unlock){ 
+		lock(mutexPtr.get()); 
+	}
+private:
+	std::shared_ptr<Mutex> mutexPtr;
+};
+```
+
+3. 资源管理类一般要提供底层指针
+	- smartPtr.get() 返回底层指针
+	- operator() 自定义隐式转换得到底层指针
+4. 以独立语句将 newed 对象放入智能指针中防止表达式求值顺序未定义问题
+
+## 4. 设计与声明
+1. 让接口容易被使用,不易被误用
+	- Date d(2000,1,30); -> Date d(Year(2000), Month(1), Day(30));

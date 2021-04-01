@@ -84,7 +84,7 @@ typename std::vector<T>::const_iterator find(const std::vector<T> &vec, const T 
         else lo=mid+1; // *mid<=e
     }
     --lo;
-    if(vec.begin()>lo) return ++lo; 
+    if(vec.begin()>lo) return ++lo;
     return lo;  
 }
 ```
@@ -106,7 +106,7 @@ int (*ptr)[10];  // ptr是一个指针, 指向含有10个int的数组
 
 #### 数组与指针
 - `int *beg=begin(array_name);` 获取首元素指针 `<iterator>` 
-- `int \*end=end(array_name);` 获取尾后指针 `<iterator>`
+- `int *end=end(array_name);` 获取尾后指针 `<iterator>`
 - 指针相减类型为ptrdiff_t, 带符号类型与迭代器的 difference_type 类似
 - 不同类型指针不能比较, 空指针相减为0
 

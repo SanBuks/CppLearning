@@ -11,7 +11,7 @@
 
 ### 类型转换
 #### 整型提升
-- bool, short, char 会提升为 int (存不下则放入 unsigned int中)
+- 定义 : 在表达式计算时，各种整型 (bool, short, char) 首先要提升为 int，如果 int 不足以表示的话，就需要提升为unsigned int类型，然后再执行表达式的运算
 - wchar\_t, char16\_t, char32\_t 会提升为 int(u), long(u), long long(u) 最小类型
 
 #### 无符号类型转换
@@ -50,7 +50,7 @@ auto r2 = a + c;
 ```c++
 if(val) 	// 非0任何值, 条件为真
 if(!val) 	// 只有为0, 条件为真
-if(val == true)  // 除非val是bool类型否则是错误写法, true会整型提升为1 产生偏差 
+if(val == true)  // 除非val是bool类型否则是错误写法, true会整型提升为1 产生偏差
 ```
 
 ### sizeof 运算符

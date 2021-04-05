@@ -4,8 +4,8 @@
 - 悬垂 else 问题 : 用花括号划分区域
 - switch : 
 ```c++
-case expr : break  //1. expr 是整型常量表达式
-case '1': case '2': case '3' ... // 2. 一致流程写法
+case expr : break  //1. expr 计算值后转换为整型
+case '1': case '2': case '3' ... // 2. case 后跟标签一定是整型常量表达式, 一致流程写法
 default: ; // 3. 一定写上default 告诉读者已经考虑默认情况
 // 4. 空 default 标签 一定以 ';' 结尾 否则语法错误
 
@@ -48,74 +48,20 @@ try{
 
 - 寻找处理异常代码层层向上, 直到terminate处理的标准库函数
 
-- \<stdexcept>定义一些异常类
+- `<stdexcept>` 定义一些异常类 :
+
+| 异常类 | 异常描述 |
+| --- | --- |
+| exception | 通用异常\* |
+| runtime_error | 运行时异常 |
+| overflow_error / underflow_error | 溢出异常 |
+| logic_error | 逻辑错误 |
+| domin_error | 参数对应值不存在 |
+| invalid_argumen | 参数无效 |
+| length_error | 创建超过类型最大长度对象 |
+| out_of_range | 超出有效值范围 |
+| bad_alloc | `<new>`  分配异常错误\* |
+| bad_cast | `<type_info>` dynamic_cast 转型错误\* |
+> \* 无字符串构造函数, what() 返回值由编译器决定
 
 
-- exception
-- runtime_error
-- logic_error
-- bad_alloc
-
-
-(5.12) 统计元音,空白符,ff,fl,fi字符的各自数量
-```c++
-int main(){
-    string str;
-    const string str_vowel="aAeEIiOoUu";
-    const string fli="fli";
-    if(cin>>str){
-          int vowel=0, space=0, fword=0;
-          auto it=cbegin(str);
-          while(it!=end(str)){
-             if(str_vowel.find(*it)<str_vowel.size())  //str.find() 返回-1(maxiumn of size_type)/位置
-                vowel++;
-             else if(isspace(*it)) 
-             //tab (\t) whitespaces (\n, \v, \f, \r) space 
-                space++;
-             else if(*it=='f'&&(it+1)!=end(str)&&fli.find(*(it+1))<fli.size()){
-             // 第一个字符是否为f ， 第二个字符是否存在 ， 第二个字符是否是fli中的字符
-                if(*(it+1)=='i') // 判断三个单词中是否包含元音字符
-                      vowel++;
-                fword++;
-                it++;  // 多移动一格
-             }
-             it++;
-          }
-          cout<<"sum: "<<str.size()<<endl;
-          cout<<"vowel: "<<vowel<<endl;
-          cout<<"space: "<<space<<endl;
-          cout<<"fword: "<<fword<<endl;
-          return 0;
-    }
-    cerr<<"no text!";
-    return -1;
-}
-```
-3. (5.17) 判断一个vector对象是否为另一个vector对象的前缀
-```c++
- template<typename T>
- bool is_prefix(const vector<T> &vec1,const vector<T> &vec2){
-    for(auto it1=cbegin(vec1),it2=cbegin(vec2);it1!=end(vec1)&&it2!=end(vec2);++it1,++it2)
-          if(*it1!=*it2)
-             return false;
-    return true;
- }
-```
-4. (5.25) 用try-catch语句写出输入2个数相除处理除数为0的情况
-```c++
-int main(){
-    int e1,e2;
-    while(cin>>e1>>e2){
-          try{
-             if(!e2) throw runtime_error("number can't be divided by 0!\n");
-             cout<<static_cast<double>(e1)/e2<<endl;
-          }catch(exception e){
-             cout<<e.what()<<"want to try again?y/n\n";
-             char c; cin>>c; 
-             if(!cin||c=='n')
-                break;
-          }
-    }
-    return 0;
-}
-```

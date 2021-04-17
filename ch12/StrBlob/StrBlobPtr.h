@@ -8,7 +8,25 @@ private:
 public:
 	StrBlobPtr():curr(0){}
 	StrBlobPtr(StrBlob &a, size_t sz=0);
-	std::string & deref() const;
-	StrBlobPtr& incr();
+
+	StrBlobPtr& operator++();
+	StrBlobPtr operator++(int);
+	StrBlobPtr& operator--();
+	StrBlobPtr operator--(int);
+
 	bool operator!=(const StrBlobPtr &rhs);
+	StrBlobPtr operator+(const int &);
+	StrBlobPtr operator-(const int &);
+
+	std::string & operator*() const {
+		auto def=check(curr, "deref past end");
+		return (*def)[curr];
+	}
+
+	std::string * operator->() const {
+		return & this->operator*();
+	}
+	
+	size_t getcurr() const { return curr; }
+
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <initializer_list>
 class StrVec{
 private :
 	std::string *elements;  // 指向第一个元素
@@ -21,6 +22,10 @@ public:
 	StrVec(StrVec &&) noexcept;
 	StrVec &operator=(const StrVec &);
 	StrVec &operator=(StrVec &&) noexcept;
+	StrVec &operator=(std::initializer_list<std::string>);
+
+	std::string &operator[](size_t n){ return elements[n]; }
+	const std::string &operator[](size_t n){ return elements[n]; }
 
 	void push_back(const std::string &);  // 末尾增加元素
 	void push_back(std::string &&); // 末尾增加元素 右值版本

@@ -1,11 +1,11 @@
+
 # Effective CPP 总结
 ## 1. 让自己熟悉CPP
-1. 语言联邦
+1. CPP视为语言联邦
 	- C语言 : 面向过程
 	- 封装, 继承, 多态 : 面向对象
 	- STL, 模板 : 泛型编程
-2. 用const而不是define来替换魔数, 因为const对象会进入编译的符号表, 编译过程中提供额外信息
-3. 用inline template函数替换宏函数避免宏展开的错误
+2. 用 const 而不是 \#define 来替换魔数, 因为const对象会进入编译的符号表, 编译过程中提供额外信息
 4. 类内静态成员初始化后可作数组定义下标
 	- 一般类内声明, 类外定义(cpp中)
 	- 如果类内初始化则 必须 
@@ -14,12 +14,12 @@
 		- 初识值是常量表达式
 		- 类外需定义一次不必初始化
 5. enum hack 替换 类内初始化, 也可坐数组下标, 且不是对象没有地址 
-6. 尽量使用const
+6. 尽量使用 const
 	- 尽量限制用户对参数的改动
-	- 作为const 返回值放止作为左值 (&&限定符)
+	- 作为 const 返回值放止作为左值 (&&限定符)
 	- const 成员函数会因为对象是否const而发生重载
-	- logical const理念 : const 成员函数可以修改对象的bits, 前提是用户侦测不出来的情况下, 使用mutable限定这些bits
-	- 避免const和non-const成员函数重复
+	- logical const 理念 : const 成员函数可以修改对象的bits, 前提是用户侦测不出来的情况下, 使用mutable限定这些bits
+	- non-const成员函数 委托 const 成员函数
 ```c++
 const char &operator[](std::size_t posi) const { 
 	return text[posi];

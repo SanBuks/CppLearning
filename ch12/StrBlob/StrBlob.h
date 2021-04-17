@@ -17,6 +17,9 @@ private:
 public:
 	StrBlob();
 	StrBlob(std::initializer_list<std::string> il);
+
+	StrBlob(const StrBlob &);
+
 	bool empty() const { return data->empty(); }
 	size_type size() const { return data->size(); }
 	std::string &operator[](size_type t){ return (*data)[t]; };

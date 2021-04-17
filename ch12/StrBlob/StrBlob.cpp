@@ -1,8 +1,14 @@
+
 #include "StrBlob.h"
 StrBlob::StrBlob()
 	:data(std::make_shared<std::vector<std::string>>()){}
 StrBlob::StrBlob(std::initializer_list<std::string> il)
 	:data(std::make_shared<std::vector<std::string>>(il)){}
+
+StrBlob::StrBlob(const StrBlob &rhs):
+	data(std::shared_ptr<std::vector<std::string>>(
+			new std::vector<std::string>(*rhs.data))
+		){}
 
 void StrBlob::check(size_type i, const std::string &msg) const {
 	if(i>=data->size())

@@ -1,23 +1,214 @@
 # 第七章
 ### 7.01
-> 
-```c++
+> 使用2.6.1节定义的Sales_data类为1.6节的交易处理程序编写一个新版本。
 
+### 7.02
+> 曾在2.6.2节的练习中编写了一个Sales_data类，请向这个类添加combine函数和isbn成员。
+
+### 7.03
+> 修改7.1.1节的交易处理程序，令其使用这些成员。
+
+参考 Sales\_data
+
+### 7.04
+> 编写一个名为Person的类，使其表示人员的姓名和地址。使用string对象存放这些元素，接下来的练习将不断充实这个类的其他特征。
+
+参考Person
+
+### 7.05
+> 在你的Person类中提供一些操作使其能够返回姓名和地址。 这些函数是否应该是const的呢？解释原因。
+
+如果只读应该是const, 返回const string & 
+
+### 7.06
+> 对于函数add、read和print，定义你自己的版本。
+
+参考 Sales\_data
+
+### 7.07
+> 使用这些新函数重写7.1.2节练习中的程序。
+
+参考 Sales\_data
+
+### 7.08
+> 为什么read函数将其Sales_data参数定义成普通的引用，而print函数将其参数定义成常量引用？
+
+read 需要修改 Sales\_data 内部数据
+print 只读 Sales\_data 数据
+
+### 7.09
+> 对于7.1.2节练习中代码，添加读取和打印Person对象的操作。
+
+参考 Person
+
+### 7.10
+> 在下面这条if语句中，条件部分的作用是什么？
+```c++
+if (read(read(cin, data1), data2)) // read返回is给第二个read传参, 报错存在隐蔽性
 ```
 
-1. (7.18)封装是什么?有什么用处?
-- 封装实现类的接口和实现分离,隐藏实现的细节,产生数据抽象
+### 7.11
+> 在你的Sales_data类中添加构造函数， 然后编写一段程序令其用到每个构造函数。
+
+### 7.12
+> 把只接受一个istream作为参数的构造函数移到类的内部。
+
+### 7.13\*
+> 使用istream构造函数重写第229页的程序。
+```c++
+void test_combine_refactor(){ 
+    Sales_data total(std::cin);
+    if(std::cin){
+        Sales_data trans(std::cin);
+        while(std::cin){
+            if(total.isbn() == trans.isbn())
+                total.combine(trans);
+            else{
+                print(std::cout, total);
+                std::cout<<"\n";
+                total = std::move(trans);
+            } 
+            trans = std::move(Sales_data(std::cin));
+        }
+        print(std::cout, total);
+    }else{
+        std::cerr << "No data!\n";
+    }
+}
+```
+
+### 7.14
+> 编写一个构造函数，令其用我们提供的类内初始值显式地初始化成员。
+```c++
+class A{
+public:
+	A():{}
+	void print(){ std::cout<<a; }
+private:
+	int a = 3;
+};
+```
+
+### 7.15
+> 为你的Person类添加正确的构造函数。
+
+参考 Person
+
+### 7.16
+> 在类的定义中对于访问说明符出现的位置和次数有限定吗？ 如果有，是什么？什么样的成员应该定义在public说明符之后？ 什么样的成员应该定义在private说明符之后？
+
+访问说明符没有位置和次数限定, 可被用户调用的公共接口在public说明符之后, 需要被隐藏的数据成员定义在private说明符之后
+
+### 7.17
+> 使用class和struct时有区别吗？如果有，是什么？
+
+class 默认访问说明符为 private
+struct 默认访问说明符为 public
+
+### 7.18
+> 封装是何含义？它有什么用处?
+
+- 封装实现类的接口和实现分离, 隐藏实现的细节, 产生数据抽象
 - 确保用户代码不会无意间破坏封装对象的状态
-- 封装类的具体实现可以随时改变,无需改变用户级别的代码
-2. (7.20)友元的利弊
+- 封装类的具体实现可以随时改变, 无需改变用户级别的代码
+
+### 7.19
+> 在你的Person类中，你将把哪些成员声明成public的？ 哪些声明成private的？ 解释你这样做的原因。
+
+构造函数, 访问器 声明为 public
+数据成员 声明为 private
+
+### 7.20
+> 友元在什么时候有用？请分别举出使用友元的利弊。
+
 - 友元帮助函数或其他的类可以访问类中的不可见成员
-- 会破坏类的封装性,产生安全性隐患
-3. (7.25)screen类可以安全地依赖默认的拷贝和赋值操作吗?
-- 可以,screen中只有简单内置类型和string的类,可以使用默认版本
-4. (7.30)显示使用this访问成员的优缺点
-- 优点:防止形参与成员重名,更加清晰反应访问的对象来源
-- 缺点:调用复杂,维护风格代价大
-5. (7.31)定义一对类X和Y,其中X包含一个指向Y的指针,而Y包含一个类型为X的对象
+- 会破坏类的封装性, 产生安全性隐患
+
+### 7.21
+> 修改你的 Sales\_data 类使其隐藏实现的细节。 你之前编写的关于 Sales\_data 操作的程序应该继续使用，借助类的新定义重新编译该程序，确保其正常工作。
+
+参考 Sales\_data
+
+### 7.22
+> 修改你的Person类使其隐藏实现的细节。
+
+参考 Person
+
+### 7.23
+> 编写你自己的Screen类型。
+
+参考 Screen
+
+### 7.24
+> 给你的Screen类添加三个构造函数：一个默认构造函数；另一个构造函数接受宽和高的值，然后将contents初始化成给定数量的空白；第三个构造函数接受宽和高的值以及一个字符，该字符作为初始化后屏幕的内容。
+
+参考 Screen
+
+### 7.25
+> Screen能安全地依赖于拷贝和赋值操作的默认版本吗？ 如果能，为什么？如果不能？为什么?
+
+可以, screen中只有简单内置类型和string的类, 可以使用默认版本
+
+### 7.26
+> 将Sales_data::avg_price定义成内联函数。
+
+参考 Sales\_data
+
+### 7.27
+> 给你自己的Screen类添加move、set 和display函数，通过执行下面的代码检验你的类是否正确。
+```c++
+// 注意, inline 函数定义在头文件中
+int main(){
+    Screen myScreen(5, 3);
+    const Screen blank(5, 3);
+    myScreen.set('#').display(std::cout);
+    std::cout<<"\n";
+    blank.display(std::cout);
+    return 0;
+}
+```
+
+### 7.28
+> 如果move、set和display函数的返回类型不是Screen& 而是Screen，则在上一个练习中将会发生什么？
+
+改变内部数据后, 返回一个副本作为一个左值进行接下来的调用
+
+### 7.29
+> 修改你的Screen类，令move、set和display函数返回Screen并检查程序的运行结果，在上一个练习中你的推测正确吗？
+```c++
+class Screen{
+	...
+    inline 
+    Screen copyDisplay(std::ostream &os){
+        do_display(os); return *this;
+    }
+};
+
+void testReturnLeftValue(){
+    Screen myScreen1(5, 3, '*');
+    myScreen1.display(std::cout).set('#');
+    myScreen1.display(std::cout);
+
+    std::cout<<"\n";
+
+    Screen myScreen2(5, 3, '*');
+    myScreen2.copyDisplay(std::cout).set('#');
+    myScreen2.display(std::cout);
+
+    // 显示 : 
+    // *****************************#
+	// ******************************
+}
+```
+
+### 7.30
+> 通过this指针使用成员的做法虽然合法，但是有点多余。讨论显示使用指针访问成员的优缺点。
+
+- 优点 : 防止形参与成员重名, 更加清晰反应访问的对象来源
+- 缺点 : 调用复杂, 维护风格代价大
+
+### 7.31
+> 定义一对类X和Y，其中X包含一个指向Y的指针，而Y包含一个类型为X的对象。
 ```c++
 class Y;
 class X{
@@ -27,7 +218,9 @@ class Y{
     X item;
 };
 ```
-6. (7.32)定义自己的Screen和Window_mgr,其中clear是Window_mgr的成员是Screen的友元
+
+### 7.32
+> 定义自己的Screen和Window_mgr,其中clear是Window_mgr的成员是Screen的友元
 ```c++
 //test.cpp
 #include"Screen.h"
@@ -90,6 +283,8 @@ void Window_mgr::clear(ScreenIndex i){
     s.contents=std::string(s.height*s.width,' ');
 }
 ```
+
+
 7. (7.41)重新编写Sale_data类,给每个构造函数添加打印信息,探究委托构造函数的调用顺序
 ```c++
 class Sales_data{

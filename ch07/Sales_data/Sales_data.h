@@ -6,11 +6,10 @@ class Sales_data{
 	friend std::istream &read(std::istream &, Sales_data &);
 	friend std::ostream &print(std::ostream &, const Sales_data &);
 public:
-	Sales_data() = default;
-	Sales_data(const std::string &s) : bookNo(s){}
+	Sales_data(const std::string &s = "") : bookNo(s){}
 	Sales_data(const std::string &s, unsigned n, double price) : bookNo(s), units_sold(n), revenue(price * n){}
 
-	Sales_data(std::istream &is){
+	Sales_data(std::istream &is = std::cin){
 		read(is, *this);
 	}
 

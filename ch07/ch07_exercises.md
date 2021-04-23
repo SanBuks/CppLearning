@@ -118,7 +118,7 @@ struct 默认访问说明符为 public
 构造函数, 访问器 声明为 public
 数据成员 声明为 private
 
-### 7.20
+### 7.20\*
 > 友元在什么时候有用？请分别举出使用友元的利弊。
 
 - 友元帮助函数或其他的类可以访问类中的不可见成员
@@ -207,7 +207,7 @@ void testReturnLeftValue(){
 - 优点 : 防止形参与成员重名, 更加清晰反应访问的对象来源
 - 缺点 : 调用复杂, 维护风格代价大
 
-### 7.31
+### 7.31\*
 > 定义一对类X和Y，其中X包含一个指向Y的指针，而Y包含一个类型为X的对象。
 ```c++
 class Y;
@@ -219,44 +219,20 @@ class Y{
 };
 ```
 
-### 7.32
+### 7.32\*
 > 定义自己的Screen和Window_mgr,其中clear是Window_mgr的成员是Screen的友元
 ```c++
-//test.cpp
-#include"Screen.h"
-int main(){
-    Window_mgr m;
-    m.print(0);
-    m.clear(0);
-    m.print(0);
-    return 0;
-}
-
+// 简略如下, 具体参考 Screen 
+// 总而言之, Window_mgr 中的 Screen 类型均是 "pimpl"
 // Screen.h
-#ifndef SCREEN_H
-#define SCREEN_H
-#include<iostream>
-#include<cstring>
 #include"Window_mgr.h"
 class Screen{
 friend void Window_mgr::clear(ScreenIndex );
 public:
-    typedef std::string::size_type pos;
-    Screen()=default;
-    Screen(pos ht, pos wd, char c):height(ht),width(wd),contents(ht*wd, c){}
-    const Screen &display(std::ostream &os) const { do_display(os); return *this; }
-private:
-    pos cursor=0;
-    pos height=0, width=0;
-    std::string contents;
-    void do_display(std::ostream &os) const { os<<contents; }
+   ...
 };
-#endif
 
 //Window_mgr.h
-#ifndef WINDOW_MGR_H
-#define WINDOW_MGR_H
-#include<vector>
 class Screen;
 class Window_mgr{
 public:
@@ -264,28 +240,131 @@ public:
     Window_mgr();
     void clear(ScreenIndex);
     void print(ScreenIndex);
+    ...
 private:
-    std::vector<Screen> screens{};//Screen(24,80,' ')
+    std::vector<Screen> screens{};
+    // 注释 Screen(24,80,' ') 降低编译依存关系
 };
-#endif
+
 
 //Window_mgr.cpp
-#include"Window_mgr.h"
 #include"Screen.h"
-void Window_mgr::print(ScreenIndex i){
-    screens[i].display(std::cout);
-}
 Window_mgr::Window_mgr(){
     screens.push_back(Screen(24,80,'x'));
 }
-void Window_mgr::clear(ScreenIndex i){
-    Screen &s=screens[i];
-    s.contents=std::string(s.height*s.width,' ');
+...
+```
+
+### 7.33
+> 如果我们给Screen添加一个如下所示的size成员将发生什么情况？如果出现了问题，请尝试修改它。
+```c++
+pos Screen::size() const  // pos 没有找到定义, 需要改为 Screen::pos 
+{
+    return height * width;
 }
 ```
 
+### 7.34
+> 如果我们把第256页Screen类的pos的typedef放在类的最后一行会发生什么情况？
 
-7. (7.41)重新编写Sale_data类,给每个构造函数添加打印信息,探究委托构造函数的调用顺序
+之前包含 pos 的声明和定义会报错, 未找到 pos 定义
+
+### 7.35
+> 解释下面代码的含义，说明其中的Type和initVal分别使用了哪个定义。如果代码存在错误，尝试修改它。
+```c++
+typedef string Type;
+Type initVal(); 
+class Exercise {
+public:
+    typedef double Type;
+    Type setVal(Type);  // double 
+    Type initVal();  // double
+private:
+    int val;
+};
+//Exercise::Type 
+Type Exercise::setVal(Type parm) {   // string , double
+    val = parm + initVal();      
+    return val; // double => string 出错
+}
+```
+
+### 7.36
+> 下面的初始值是错误的，请找出问题所在并尝试修改它。
+```c++
+struct X {
+	X (int i, int j): base(i), rem(base % j) {}  
+	int rem, base;
+	// int base, rem;
+};
+```
+
+### 7.37
+> 使用本节提供的Sales_data类，确定初始化下面的变量时分别使用了哪个构造函数，然后罗列出每个对象所有的数据成员的值。
+```c++
+//Sales_data(const std::string &s = "")
+Sales_data first_item(cin); 
+
+int main() {
+    // 默认构造函数
+    Sales_data next;
+	// Sales_data(const std::string &s = "")
+    Sales_data last("9-999-99999-9"); 
+}
+```
+
+### 7.38
+> 有些情况下我们希望提供cin作为接受istream&参数的构造函数的默认实参，请声明这样的构造函数。
+```c++
+Sales_data(std::istream &is = std::cin){
+    read(is, *this);
+}
+```
+
+### 7.39
+> 如果接受string的构造函数和接受istream&的构造函数都使用默认实参，这种行为合法吗？如果不，为什么？
+
+不合法, 两者都为默认构造函数, 规定每个类只能有一个默认构造函数
+
+### 7.40
+> 从下面的抽象概念中选择一个（自己指定Tree），思考这样的类需要哪些数据成员，提供一组合理的构造函数并阐明这样做的原因。
+```c++
+// Tree.h
+class Tree;
+
+class TreeNode{
+    friend class Tree;
+public:
+    TreeNode(int val = 0) : data(val), parent(nullptr), lchild(nullptr), rchild(nullptr){}
+    unsigned long size();
+private:
+    int data;
+    TreeNode *lchild;
+    TreeNode *rchild;
+    TreeNode *parent;
+};
+
+class Tree{
+public:
+    Tree() : root(nullptr), size(0){}
+    Tree(TreeNode *p) : root(p), size(p->size()) {}
+private:
+    TreeNode *root;
+    unsigned long size;
+};
+
+// Tree.cpp
+#include "Tree.h"
+unsigned long TreeNode::size(){
+    unsigned long size = 0;
+    if(lchild) size = lchild->size();
+    if(rchild) size += rchild->size();
+    return size + 1;
+};
+```
+
+### 7.41\*
+> 使用委托构造函数重新编写你的Sales_data类，给每个构造函数体添加一条语句，令其一旦执行就打印一条信息。用各种可能的方式分别创建Sales_data对象，认真研究每次输出的信息直到你确实理解了委托构造函数的执行顺序。
 ```c++
 class Sales_data{
 friend std::istream &read(std::istream &is, Sales_data &item);
@@ -295,18 +374,28 @@ private:
     double revenue=0.0;
     double avg_price() const;
 public:
-    Sales_data(): Sales_data("",0,0) { std::cout<<"default\n";}
-    Sales_data(const std::string &s):Sales_data(s,0,0){ std::cout<<"string\n";}
+    Sales_data(): Sales_data("",0,0) { 
+    	std::cout<<"default\n";
+    }
+    Sales_data(const std::string &s):Sales_data(s,0,0){ 						std::cout<<"string\n";
+    }
     Sales_data(const std::string &s, unsigned n, double p):
-                bookNo(s), units_sold(n), revenue(p*n){ std::cout<<"s.u.d\n"; }
-    Sales_data(std::istream &is): Sales_data() {read(is,*this); std::cout<<"istream\n";};                
+      bookNo(s), units_sold(n), revenue(p*n){ 
+      	std::cout<<"s.u.d\n"; 
+    }
+    Sales_data(std::istream &is) : Sales_data() {
+    	read(is,*this); 
+    	std::cout<<"istream\n";
+    }                
 };
+
 std::istream &read(std::istream &is, Sales_data &item){
     double price=0;
     is>>item.bookNo>>item.units_sold>>price;
     item.revenue=price*item.units_sold;
     return is;
 }
+
 int main(int argc, char *argv[]){
     Sales_data item; // s.u.d default
     Sales_data item("132"); // s.u.d string
@@ -314,74 +403,229 @@ int main(int argc, char *argv[]){
     return 0;
 }
 ```
-8. (7.43,45)假定有一个名为NoDefault类,有一个接受int的构造函数,没有默认构造函数.定义类C,有一个NoDefault类型成员,定义C的默认构造函数. vector\<C> vec(10);合法吗?
+
+### 7.42
+> 对于你在练习7.40中编写的类，确定哪些构造函数可以使用委托。如果可以的话，编写委托构造函数。如果不可以，从抽象概念列表中重新选择一个你认为可以使用委托构造函数的，为挑选出的这个概念编写类定义。
+
+暂时没有
+
+### 7.43\*
+> 假定有一个名为NoDefault的类，它有一个接受int的构造函数，但是没有默认构造函数。定义类C，C有一个 NoDefault类型的成员，定义C的默认构造函数。
 ```c++
+#include <iostream>
 class NoDefault{
 public:
-    NoDefault(int i){}
+    NoDefault(int i) : data(i){}
+	void print(){ std::cout<< data;}
+private:
+	int data;
 };
 
 class C{
 public:
-    C():nd(NoDefault(0)){}
+    C():nd(0){}  // 调用唯一的构造函数进行初始化
+	void print(){ nd.print(); }
 private:
     NoDefault nd;    
 };
 
+
 int main(){
-    C c;
-    std::vector<C> vec(10); // 合法 C中的默认构造函数在初始化列表中调用接受int类型的构造函数初始化NoDefault
-    return 0;
+	C c;
+	c.print();
+	return 0;
 }
 ```
-9.  (7.49) 对于combine函数的三种不同声明，当我们调用i.combine(s)时分别发生了什么情况？其中i是一个Sales_data(含有非explicit的转化构造函数)，而s是一个string对象
-参考[链接](https://stackoverflow.com/questions/31444343/cconfusion-about-converting-constructor-when-using-the-result-as-parameter-of)
+
+### 7.44
+> 下面这条声明合法吗？如果不，为什么？
+```c++
+vector<NoDefault> vec(10); // 不合法, 因为没有默认构造函数
+```
+
+### 7.45
+> 如果在上一个练习中定义的vector的元素类型是C，则声明合法吗？为什么？
+
+合法, C有默认构造函数 
+
+### 7.46
+> 下面哪些论断是不正确的？为什么？
+```c++
+(a) 一个类必须至少提供一个构造函数。  // 正确, 如果没有构造函数会合成一个默认构造函数
+(b) 默认构造函数是参数列表为空的构造函数。  // 不准确, 参数列表为空或都有默认实参
+(c) 如果对于类来说不存在有意义的默认值，则类不应该提供默认构造函数。 // 正确, 不提供默认构造函数 不等于 不初始化
+(d) 如果类没有定义默认构造函数，则编译器将为其生成一个并把每个数据成员初始化成相应类型的默认值。 // 不准确, 没有定义任何一个构造函数时才会自动合成一个默认构造函数
+```
+
+### 7.47\*
+> 说明接受一个string参数的Sales_data构造函数是否应该是explicit的，并解释这样做的优缺点。
+
+- explicit : 
+	优点 : 能够抑制意想不到的隐式类类型转换
+	缺点 : 需要手动调用 `Sales_data(str)`
+- 非 explicit : 
+	优点 : 方便, 直接在可以使用 Sales\_data 直接用 string 对象替代
+	缺点 : 隐式转换会产生隐藏
+
+### 7.48
+> 假定Sales_data的构造函数不是explicit的，则下述定义将执行什么样的操作？
+```c++
+string null_isbn("9-999-9999-9"); 
+Sales_data item1(null_isbn); // 调用 Sales_data 的 构造函数
+Sales_data item2("9-999-99999-9"); // const char * => string (string类类型转化) => 调用 Sales_data 的 构造函数
+```
+
+### 7.49\*
+> 对于combine函数的三种不同声明，当我们调用 i.combine(s) 时分别发生什么情况？其中i是一个Sales_data，而 s是一个string对象。
 ```c++
 Sales_data& combine(Sales_data rhs); // 正确,发生隐式类类型转换,string->Sales_data
 Sales_data& combine(Sales_data& rhs); // 错误,无法发生隐式类类转换
 /*
-1. string -> Sales_data 产生临时变量 temporary_rhs
+1. string -> Sales_data 产生临时变量 temporary_rhs (右值)
 2. Sales_data & rhs = temporary_rhs; 
-3. 进入函数体或者括号结束后临时变量temporary_rhs销毁,编译器报错
+3. 进入函数体或者括号结束后 临时变量temporary_rhs销毁, 编译器报错
 */
 Sales_data& combine(const Sales_data& rhs) const; // 错误,const this指针无法改变类成员
 Sales_data& combine(const Sales_data& rhs) ; // 正确,可以发生隐式类类型转换
 /*
 1. string -> Sales_data 产生临时变量 temporary_rhs
-2. const Sales_data temp = tempporary_rhs;
-3. const Sales_data & rhs = temp;(2,3步等价var->const var& 第二章知识点)
+2. const Sales_data temp = tempporary_rhs; 将右值赋予 const 左值
+3. const Sales_data & rhs = temp; ( 2,3 步等价 var->const var&  )
 4. 进入函数体,处理完后自动变量(形参)销毁
 */
 ```
-10.  (7.51)vector将其单参数的构造函数定义成explicit,而string不是,原因何在?
-- string接受const char*的隐式类类型转换可以方便对c类型字符数组转换成string,在多个函数中可以合理方便用于转换
-- vector不接受单参数vector的隐式类类型转换可以有效避免不注意的size_type转换成vector发生错误
-11.  (7.56)什么是类的静态成员?有何优点?与普通成员有何区别?
-- 类的静态成员定义 : 与类本身相关,不与各个类对象关联的类成员,类对象共享静态成员变量却不包含静态成员数据
-- 优点与区别 : 定义一次直到程序结束销毁,不占类对象空间,可以是不完全类型,可以作为成员函数默认实参(constexpr类型)
-12.  (7.58)下面的静态数据成员的声明和定义有错误吗?请解释原因
+
+参考[链接](https://stackoverflow.com/questions/31444343/cconfusion-about-converting-constructor-when-using-the-result-as-parameter-of)
+
+### 7.50
+> 确定在你的Person类中是否有一些构造函数应该是explicit 的。
+
+参考 Person
+
+### 7.51
+> vector将其单参数的构造函数定义成explicit的，而string则不是，你觉得原因何在？
+
+- string 接受 const char\* 的隐式类类型转换可以方便对 c 类型字符数组转换成 string, 在多个函数中可以合理方便用于转换
+- vector 不接受单参数 vector 的隐式类类型转换可以有效避免不注意的 size\_type 转换成 vector发生错误
+
+### 7.52
+> 使用2.6.1节的 Sales_data 类，解释下面的初始化过程。如果存在问题，尝试修改它。
+```c++
+struct Sales_data{
+	std::string bookNo;
+	unsigned units_sold; //  聚合类没有类内初始值, 没有构造函数
+	double revenue;
+};
+
+Sales_data item = {"987-0590353403", 25, 15.99};
+```
+
+### 7.53\*
+> 定义你自己的Debug。
+```c++
+// debug.h
+class Debug{
+public:
+    constexpr Debug(bool b = true) : hw(b), io(b), other(b){}
+    constexpr Debug(bool h, bool i, bool o) : hw(h), io(i), other(o){}
+    constexpr bool any() const { return hw | io | other; }
+
+    void set_hw(bool b) const { hw = b; }
+    void set_io(bool b) const { io = b; }
+    void set_other(bool b) const { other = b; }
+
+private:
+    bool mutable hw;
+    bool mutable io;
+    bool mutable other;
+};
+
+// test.cpp
+#include <iostream>
+#include "debug.h"
+
+int main(){
+	constexpr Debug debug(false, false, true);
+	debug.set_other(false);
+	std::cout << debug.any();
+	return 0;
+}
+```
+
+### 7.54
+> Debug中以 se\t_ 开头的成员应该被声明成constexpr 吗？如果不，为什么？
+
+constexpr 函数只可包含一个返回语句
+
+### 7.55
+> 7.5.5节的Data类是字面值常量类吗？请解释原因。
+
+std::string 不是字面值常量类
+
+### 7.56\*
+> 什么是类的静态成员？它有何优点？静态成员与普通成员有何区别？
+
+- 类的静态成员定义 : 与类本身相关, 不与各个类对象关联的类成员, 类对象共享静态成员变量却不包含静态成员数据
+- 优点与区别 : 定义一次直到程序结束销毁, 不占类对象空间, 可以是不完全类型, 可以作为成员函数默认实参 (constexpr const 类型 )
+
+### 7.57
+> 编写你自己的Account类。
+```c++
+#pragma once
+#include <string>
+#include <iostream>
+class Account{
+public:
+    Account(const std::string &_owner, double _amount) : owner(_owner), amount(_amount) {}
+
+    void calculate(){ amount += amount * interestRate;}
+    double getAmount() const { return amount; }
+
+    static double rate() { return interestRate; }
+    static void rate(double);
+private:
+    std::string owner;
+    double amount;
+
+    static double interestRate;
+};
+
+double Account::interestRate = 0.01;
+void Account::rate(double newRate){
+    interestRate = newRate;
+}
+
+void testAmount(){
+    Account account("James", 10000);
+    Account::rate(0.80);
+    account.calculate();
+    std::cout<<account.getAmount();
+}
+```
+
+### 7.58\*
+> 下面的静态数据成员的声明和定义有错误吗？请解释原因。
 ```c++
 //example.h
 #include<vector>
 class Example{
 public:
-    static double rate=6.5;  // 错误,类内初始化静态成员需要用constexpr修饰
+    static double rate=6.5;  // 1. 错误, 类内初始化静态成员需要用 constexpr 修饰
     // static constexpr double=6.5;
 
-    static const int vecSize=20;   // 正确,此时constexpr与const没有区别
+    static const int vecSize=20;   // 2. 正确, 此时 constexpr 与 const 没有区别
 
     static std::vector<double> vec(vecSize); 
-    // 错误,类内初始化需要constexpr修饰,vector不可被constexpr修饰,需要在类外定义
+    // 3. 错误, 类内初始化需要 constexpr 修饰,vector 不可被 constexpr 修饰, 需要在类外定义
     // static std::vector<double> vec;
 };
 
 //example.cpp
 #include"example.h"
-double Example::rate;  //错误,类内初始化后在外部定义需要const修饰,由于已在类内初始化则无需再初始化了
+double Example::rate;   //错误, 类内初始化后在外部定义需要const修饰, 由于已在类内初始化则无需再初始化了
 //double const Example::rate;
 
-std::vector<double> Example::vec;  //错误.没有对vector的参数进行初始化
+std::vector<double> Example::vec;  //错误, 没有对vector的参数进行初始化
 //std::vector<double> Example::vec(Example::vecSize);
-//这里vecSize在类作用域中,无需在类外进行一次定义
-//总结:最好不要类内初始化，否则必须是常量静态成员
+//这里vecSize在类作用域中, 无需在类外进行一次定义
 ```

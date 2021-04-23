@@ -1,7 +1,11 @@
+#pragma once
 #include <iostream>
 #include <string>
+#include "Window_mgr.h"
 
 class Screen{
+    friend void Window_mgr::clear(ScreenIndex);
+    friend void Window_mgr::print(ScreenIndex);
 public:
     typedef std::string::size_type pos;
 
@@ -10,6 +14,8 @@ public:
         height(ht), width(wd), contents(ht * wd, c){ 
         cursor = ht * wd - 1;
     }
+
+    pos size() const;
 
     char get() const { return contents[cursor]; }
     inline 

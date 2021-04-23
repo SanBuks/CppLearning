@@ -8,8 +8,9 @@ friend std::istream &read(std::istream &, Person &);
 
 public:
     Person() = default;
-    Person(const std::string &s1 = "", const std::string &s2 = "") 
-        : name(""), address("") {}
+    Person(const std::string &_name = "", const std::string &_address = "") 
+        : name(_name), address(_address) {}
+    explicit Person(std::istream &is){ read(is, *this); }
     const std::string &getName() const { return name; }
     const std::string &getAddress() const { return address; }
 

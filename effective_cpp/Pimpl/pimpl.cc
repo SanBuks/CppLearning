@@ -1,4 +1,4 @@
-#include "test.h"
+#include "pimpl.h"
 #include <iostream>
 class Widget::WidgetImpl{
  public:
@@ -22,14 +22,14 @@ void Widget::WidgetImpl::show() {
   std::cout << number_ << "\n";
 }
 
-Widget::Widget(int number) : Pimpl(new WidgetImpl(number)) { }
+Widget::Widget(int number) : pimpl_(new WidgetImpl(number)) { }
 Widget::~Widget() = default;
-Widget::Widget(Widget &&rhs) : Pimpl(std::move(rhs.Pimpl)){ }
+Widget::Widget(Widget &&rhs) : pimpl_(std::move(rhs.pimpl_)){ }
 Widget &Widget::operator =(Widget &&rhs) { 
-  Pimpl  = std::move(rhs.Pimpl); 
+  pimpl_  = std::move(rhs.pimpl_); 
   return *this;
 }
-void Widget::show() { Pimpl->show(); }
+void Widget::show() { pimpl_->show(); }
 
 
 int main() {

@@ -11,5 +11,5 @@ class Widget {
 
   void show();
  private:
-  std::unique_ptr<WidgetImpl> Pimpl;
+  std::unique_ptr<WidgetImpl> pimpl_;
 };

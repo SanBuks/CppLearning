@@ -32,7 +32,7 @@ auto a="123"+"234;  // 非法, 不能将两个字面值常量直接相加
 
 ## 2.2 判断字符函数
 
-![](D:\Project\LEARNING\cpp_learning\cpp_primer\image\ch03_cctype.png)
+![](https://raw.githubusercontent.com/SanBuks/Cpp_Learning/master/cpp_primer/image/ch03_cctype.png)
 
 ## 2.3 遍历字符与转换字符
 ```c++

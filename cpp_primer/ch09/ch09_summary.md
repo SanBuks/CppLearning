@@ -283,7 +283,7 @@ std::string str_sub2 = a_str.substr(a_str, 0, 3); // 从 下标 0 位置 拷贝�
 ```
 
 ## 6.2 修改
-![](https://img-blog.csdnimg.cn/20200815194721836.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNDgyMTk4,size_16,color_FFFFFF,t_70#pic_center)
+![](https://raw.githubusercontent.com/SanBuks/Cpp_Learning/master/cpp_primer/image/ch09_modify_op.jpg)
 
 ## 6.3 查找
 ```c++

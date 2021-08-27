@@ -1,16 +1,15 @@
 # 第十二章 动态内存与智能指针
-
-### 1. 概述
-- 程序用堆来存储动态分配的对象,一般会产生三个问题: 忘记释放内存, 同一块内存释放两次和产生野指针
+## 1. 概述
+- 程序用堆来存储动态分配的对象,一般会产生三个问题: 忘记释放内存, 同一块内存释放两次 和 产生野指针
 - 一般出于三种原因使用动态内存: 对象个数未知, 类型未知, 需要共享数据 
-- 用shared_ptr, unique_ptr和weak_ptr帮助管理内存,定义在`<memory>`中
+- 用shared_ptr, unique_ptr 和 weak_ptr 帮助管理内存, 定义在`<memory>`中
 
-### 2. 智能指针
-#### shared\_ptr通用用法
+## 2. 智能指针
+### shared\_ptr通用用法
 
 |unique与shared通用用法|解释|
 |---|---|
-|shared_ptr/unique_ptr\<T> p1| 返回保存空指针的智能指针, 可指向T类型|
+|shared_ptr/unique_ptr\<T> p1(T* p = nullptr)| 返回保存指针的智能指针, 指向T类型 |
 |if(p); \*p; p->mem;|通过智能指针判断是否为空或者访问对象|
 |p.get();|获取智能指针中保存的指针|
 |swap(p1,p2);|交换智能指针中保存的指针|
@@ -24,7 +23,7 @@
 
 - shared_ptr 保存引用计数,记录有多少个其他智能指针指向同一个对象,赋值或值返回 与销毁会增减计数
 
-#### 直接管理内存
+### 直接管理内存
 - 通过 new 手动分配对象,但注意对象的默认初始化问题
 ```c++
 int *p1=new int; // 动态分配的内置类型 未初始化值未定义
@@ -39,7 +38,7 @@ const int *p5=new const int(3); // 动态分配const对象,返回值必须是指
 - 通过 delete 释放内存, 注意不可多次释放, 不可释放非new分配的内存, 可以为释放后的指针置nullptr来提供有限保护
 - 当引用计数为0则会调用析构函数释放分配的对象
 
-#### shared_ptr与new
+### shared_ptr 与 new
 
 |shared_ptr其他用法|解释|
 |---|---|
@@ -80,7 +79,7 @@ void f(dest &d){
 }
 ```
 
-#### unique_ptr
+### unique_ptr
 - `unique_ptr<int> p(new int(22));` 只能指向一个对象, 必须初始化绑定到new分配的对象上
 - 不支持拷贝构造, 不支持赋值, 可以通过特殊操作进行转移, 作为返回值返回时执行移动拷贝
 
@@ -88,9 +87,9 @@ void f(dest &d){
 |---|---|
 |unique_ptr\<T(,D)> p(d);|定义一个空unique_ptr,删除器的类型为D,传递一个删除器d|
 |u.release();|返回管理的指针,u设置为空|
-|u=nullptr;u.reset(nullptr);u.reset(q);| 释放u的对象,将p设置为空或接管动态分配的q|
+|u=nullptr; u.reset(nullptr); u.reset(q);| 释放u的对象; 将p设置为空; 接管动态分配的q |
 
-#### weak_ptr
+### weak_ptr
 - `weak_ptr`绑定到`shared_ptr`后不会改变引用计数, 销毁时不管是否有`weak_ptr`绑定, 可以通过lock判断`weak_ptr`是否为空
 
 |weak_ptr用法|解释|
@@ -102,8 +101,8 @@ void f(dest &d){
 |w.lock()|如果expired为真返回空shared_ptr<br/>否则返回一个指向对象的shared_ptr(引用计数+1)|
 
 
-### 4. 动态数组
-#### 手动分配
+## 4. 动态数组
+### 手动分配
 - 手动分配数组返回一个指针, 对于动态分配的内存不能调用begin(),end()函数获取迭代器
 - 分配0个数数组返回一个空指针, 价与尾后指针
 - `delete [] p;` 逆序释放元素,  一定加上`[]`释放动态数组,否则未定义
@@ -125,7 +124,7 @@ shared_ptr<int> sp(new int[10](), // 可以通过shared_ptr管理手动分配的
 *(sp.get()+1)=22; // 不支持下标访问,只能通过get返回内置指针进行操作
 ```
 
-#### allocator类
+### allocator类
 - allocator将分配内存和构造分离, 先分配较大内存然后按需构造对象(付出一定开销, 节省一定内存)
 - 必须先构造后才能使用元素, 否则未定义
 ```c++

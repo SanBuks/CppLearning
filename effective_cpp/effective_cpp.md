@@ -27,9 +27,11 @@ const char &operator[](std::size_t posi) const {
 }
 char &operator[](std::size_t posi) { 
   return const_cast<char &>(static_cast<const A&>(*this)[posi]);
+  // 注意 转换为 const A& ， 如果事 const A 会发生拷贝
 }
 // 反过来, const 成员函数不应该委托 non-const 成员函数
 // 如果调用 non-const 成员 需要 const_cast<A &>(*this)[posi] 危险 
+// 
 ```
 
 ## 定义对象时候一定赋予初识值完成初始化

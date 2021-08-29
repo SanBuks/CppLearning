@@ -1,9 +1,8 @@
 #include "date.h"
-#include <map>
+
 #include <string>
 #include <iostream>
 #include <exception>
-#include <sstream>
 
 Date::Date(const std::string &date_str) {
     Parse(date_str);
@@ -26,6 +25,7 @@ void Date::Parse(const std::string &date_str) {
   std::string month_str;
   std::string day_str;
   std::string year_str;
+  std::string src;
 
   // parse '1/1/1990' 
   if (date_str.find("/") != std::string::npos) {  

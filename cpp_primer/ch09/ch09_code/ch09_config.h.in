@@ -1,0 +1,9 @@
+#define ch09_VERSION_MAJOR @ch09_VERSION_MAJOR@
+#define ch09_VERSION_MINOR @ch09_VERSION_MINOR@
+const char* const EXPRESSION_FILENAME = "@EXPRESSION_FILENAME@";
+const char* const PRIORITY_FILENAME = "@PRIORITY_FILENAME@";
+
+// mybuild/ use command :
+// cmake -G"MinGW Makefiles" -DCMAKE_MAKE_PROGRAM=make
+// -DEXPRESSION_FILENAME=../../ch09_data/expression.txt
+// -DPRIORITY_FILENAME=../../ch09_data/operation_priority.txt ..

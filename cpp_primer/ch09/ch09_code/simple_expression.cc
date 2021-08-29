@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include "ch09_config.h"
 #include "common.h"
 
 SimpleExpression::SimpleExpression(
@@ -207,10 +208,10 @@ double SimpleExpression::Calc(double number1, std::string &op, double number2) {
 }
 
 int main () {
-  std::string expression_filename = "../ch09_data/expression.txt"; 
-  std::string priority_filename = "../ch09_data/operation_priority.txt";
+  // std::string expression_filename = "ch09_data/expression.txt";
+  // std::string priority_filename = "ch09_data/operation_priority.txt";
   try {
-    SimpleExpression expr(expression_filename, priority_filename);
+    SimpleExpression expr(EXPRESSION_FILENAME, PRIORITY_FILENAME);
     std::cout << expr.get_expression_str() << "\n";
     std::cout << expr.Parse() << "\n";
   } catch (std::exception &ex) {

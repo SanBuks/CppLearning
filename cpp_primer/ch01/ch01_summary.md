@@ -13,16 +13,16 @@
     - badbit 是否发生不可恢复的错误
 - 流对象的判断函数 : 
 
-| eofbit | failbit | badbit | good() | fail() | bad() | eof() | operator bool | operator! |
-|---|---|---|---|---|---|---|---|---|
-| X                 | X         | X   | O    | X   | X  | X  | O           | X     |
-| X                 | X         | O    | X   | O    | O   | X  | X          | O      |
-| X                 | O          | X   | X   | O    | X  | X  | X          | O      |
-| X                 | O          | O    | X   | O    | O   | X  | X          | O      |
-| O                  | X         | X   | X   | X   | X  | O   | O           | X     |
-| O                  | X         | O    | X   | O    | O   | O   | X          | O      |
-| O                  | O          | X   | X   | O    | X  | O   | X          | O      |
-| O                  | O          | O    | X   | O    | O   | O   | X          | O      |
+| failbit | badbit | eofbit | good() | fail() | bad() | eof() | bool |
+|---|---|---|---|---|---|---|---|
+| X | X | X | O | X | X | X | O |
+| X | X | O | X | X | X | O | O |
+| X | O | X | X | O | O | X | X |
+| O | X | X | X | O | X | X | X |
+| O | O | X | X | O | O | X | X |
+| X | O | O | X | O | O | O | X |
+| O | X | O | X | O | X | O | X |
+| O | O | O | X | O | O | O | X |
 
 - 流对象用于循环判断中 : 
     - 参考 `ch01_code/stream_test.cc` 发现 `while(cin>>a){...}`调用 bool 运算符, 执行了3次

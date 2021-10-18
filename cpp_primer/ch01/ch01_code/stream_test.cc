@@ -2,7 +2,7 @@
 #include <fstream>
 
 int main() {
-  std::ifstream file("stream_test.data");
+  std::ifstream file("../ch01_data/stream_test.data");
   if (file) {
     int times = 0, number;
     while(file) {

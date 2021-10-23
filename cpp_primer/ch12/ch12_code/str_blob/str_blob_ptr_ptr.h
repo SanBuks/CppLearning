@@ -1,5 +1,5 @@
 #include <memory>
-#include "StrBlob.h"
+#include "str_blob.h"
 class SBPP{
 private:
 	std::shared_ptr<StrBlobPtr> sbpp;

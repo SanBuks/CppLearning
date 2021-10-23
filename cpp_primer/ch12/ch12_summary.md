@@ -1,29 +1,49 @@
-# 第十二章 动态内存与智能指针
-## 1. 概述
-- 程序用堆来存储动态分配的对象,一般会产生三个问题: 忘记释放内存, 同一块内存释放两次 和 产生野指针
+# 1. 概述
+## 大致内存分类
+- 静态内存: 局部 static 对象, 类 static 对象 和 全局对象
+- 栈内存: 函数内非 static 对象
+- 堆: 动态分配的对象
+
+## 堆使用的痛点问题
+- 忘记释放内存: 内存泄漏
+- 同一块内存释放多次: 未定义, 可能无意释放了其他对象的内存
+- 使用野指针: 未定义, 可能无意对其他对象的内存进行了操作
+
 - 一般出于三种原因使用动态内存: 对象个数未知, 类型未知, 需要共享数据 
 - 用shared_ptr, unique_ptr 和 weak_ptr 帮助管理内存, 定义在`<memory>`中
 
-## 2. 智能指针
-### shared\_ptr通用用法
+# 2. 智能指针
+## shared\_ptr 与 unique\_ptr 通用用法
+```c++
+// shared_ptr 和 unique_ptr 公用操作
+unique_ptr<vector<int>> up(new vector<int>{1, 2, 3});  // 指向 分配的对象
+unique_ptr<vector<int>> up_empty;                      // 指向 空指针
+if (up && !up->empty()) {                              // 与 内置指针类似操作
+  const auto &vec = *up;
+  const vector<int> *raw_pointer = up.get();           // 获取内部管理指针
+  cout << vec[0] << " " << (*raw_pointer)[1] << "\n";  // 1 2
+}
 
-|unique与shared通用用法|解释|
-|---|---|
-|shared_ptr/unique_ptr\<T> p1(T* p = nullptr)| 返回保存指针的智能指针, 指向T类型 |
-|if(p); \*p; p->mem;|通过智能指针判断是否为空或者访问对象|
-|p.get();|获取智能指针中保存的指针|
-|swap(p1,p2);|交换智能指针中保存的指针|
+swap(up, up_empty);                                    // 交换
+cout << (up ? 1 : 0) << "\n";                          // 0
+cout << (*up_empty)[2] << "\n";                        // 3
+```
 
-|shared用法|解释|
-|---|---|
-|make_shared\<T>(args);|初始化智能指针并返回|
-|shared_ptr\<T> p(q(,d)|拷贝初始化, 调用对象d替代delete|
-|p=p2;|递增p2的计数, 递减p原来的计数 |
-|p.unique(); p.use_count();|测试当前计数值, 一般做reset的检测|
+## shared\_ptr 特殊用法
+```c++
+// shared_ptr 特殊操作
+// shared_ptr 保存引用计数,记录有多少个其他智能指针指向同一个对象, 赋值, 值返回会增加计数
+//                                                    离开作用域自动销毁会减少计数
+// 注意 保存在容器中的智能指针遗留问题, 需要手动 erase 不需要保存对象的指针
+shared_ptr<vector<int>> sp1 = make_shared<vector<int>>(10, 2);  // 根据 构造函数的参数 动态分配
+shared_ptr<vector<int>> sp2(sp1);                               // 拷贝构造 增加 引用计数
+shared_ptr<vector<int>> sp3 = make_shared<vector<int>>();
+sp3 = sp2;                                                      // 拷贝减少 sp3 引用计数, 增加 sp2 引用计数
+std::cout << sp3.unique() << " " << sp3.use_count() << "\n";    // 引用计数是否是一, 引用计数个数
+                                                                // 3 3
+```
 
-- shared_ptr 保存引用计数,记录有多少个其他智能指针指向同一个对象,赋值或值返回 与销毁会增减计数
-
-### 直接管理内存
+## 直接管理内存
 - 通过 new 手动分配对象,但注意对象的默认初始化问题
 ```c++
 int *p1=new int; // 动态分配的内置类型 未初始化值未定义
@@ -32,13 +52,14 @@ vector<int> *p3=new vector<int>{1,2,3,4,5,6};  // 列表初始化
 auto *p4=new auto(obj); // 分配与obj相同类型相同值的对象,注意obj只能有一个
 const int *p5=new const int(3); // 动态分配const对象,返回值必须是指向const的指针,且分配对象必须初始化
 ```
+
 - 通过 new 手动分配对象, 会抛出`bad_alloc`异常 可以通过 `new (std::nothrow) T();` 来避免抛出异常, 返回空指针
 > `nothrow` 和 `bad_alloc` 定义在 `<new>`中
 
 - 通过 delete 释放内存, 注意不可多次释放, 不可释放非new分配的内存, 可以为释放后的指针置nullptr来提供有限保护
 - 当引用计数为0则会调用析构函数释放分配的对象
 
-### shared_ptr 与 new
+## shared_ptr 与 new
 
 |shared_ptr其他用法|解释|
 |---|---|
@@ -79,7 +100,7 @@ void f(dest &d){
 }
 ```
 
-### unique_ptr
+## unique_ptr
 - `unique_ptr<int> p(new int(22));` 只能指向一个对象, 必须初始化绑定到new分配的对象上
 - 不支持拷贝构造, 不支持赋值, 可以通过特殊操作进行转移, 作为返回值返回时执行移动拷贝
 
@@ -89,7 +110,7 @@ void f(dest &d){
 |u.release();|返回管理的指针,u设置为空|
 |u=nullptr; u.reset(nullptr); u.reset(q);| 释放u的对象; 将p设置为空; 接管动态分配的q |
 
-### weak_ptr
+## weak_ptr
 - `weak_ptr`绑定到`shared_ptr`后不会改变引用计数, 销毁时不管是否有`weak_ptr`绑定, 可以通过lock判断`weak_ptr`是否为空
 
 |weak_ptr用法|解释|
@@ -101,8 +122,8 @@ void f(dest &d){
 |w.lock()|如果expired为真返回空shared_ptr<br/>否则返回一个指向对象的shared_ptr(引用计数+1)|
 
 
-## 4. 动态数组
-### 手动分配
+# 4. 动态数组
+## 手动分配
 - 手动分配数组返回一个指针, 对于动态分配的内存不能调用begin(),end()函数获取迭代器
 - 分配0个数数组返回一个空指针, 价与尾后指针
 - `delete [] p;` 逆序释放元素,  一定加上`[]`释放动态数组,否则未定义
@@ -124,7 +145,7 @@ shared_ptr<int> sp(new int[10](), // 可以通过shared_ptr管理手动分配的
 *(sp.get()+1)=22; // 不支持下标访问,只能通过get返回内置指针进行操作
 ```
 
-### allocator类
+## allocator类
 - allocator将分配内存和构造分离, 先分配较大内存然后按需构造对象(付出一定开销, 节省一定内存)
 - 必须先构造后才能使用元素, 否则未定义
 ```c++

@@ -1,56 +1,173 @@
-#include "str_blob.h"
 #include "str_blob_ptr.h"
 
-StrBlobPtr::StrBlobPtr(StrBlob &a, size_t sz):wptr(a.data), curr(sz){}
-std::shared_ptr<std::vector<std::string>> StrBlobPtr::check(std::size_t i, const std::string &msg) const{
-	auto ret=wptr.lock();
-	if(!ret)
-		throw std::runtime_error("unbound StrBlobPtr");
-	if(i>=ret->size())
-		throw std::out_of_range(msg);
-	return ret;
+#include <stdexcept>
+
+#include "str_blob_ptr_error.h"
+#include "str_blob.h"
+
+StrBlobPtr::StrBlobPtr(StrBlob &a, RankType rank)
+  : curr_(rank), wptr_(a.data_) {}
+
+StrBlobPtr &StrBlobPtr::operator++() {
+  // 保证异常安全, 先检测改变后的状态
+  RankType modified_rank = curr_ + 1;
+  Check(modified_rank, StrBlobPtrError::kIncrefPastEnd);
+
+  ++curr_;
+  return *this;
+}
+StrBlobPtr StrBlobPtr::operator++(int) & {
+  auto ret = *this;
+  this->operator++();
+  return ret;
+}
+StrBlobPtr &StrBlobPtr::operator--() {
+  RankType modified_rank = curr_ - 1;
+  Check(modified_rank, StrBlobPtrError::kDecrefPastBegin);
+
+  --curr_;
+  return *this;
+}
+StrBlobPtr StrBlobPtr::operator--(int) & {
+  auto ret = *this;
+  this->operator--();
+  return ret;
+}
+StrBlobPtr StrBlobPtr::operator+(const int &n) {
+  RankType modified_rank = curr_ + n;
+  Check(modified_rank, StrBlobPtrError::kIncrefPastEnd);
+
+  auto ret = *this;
+  ret.curr_ += n;
+  return ret;
+}
+StrBlobPtr StrBlobPtr::operator-(const int &n) {
+  RankType modified_rank = curr_ - n;
+  Check(modified_rank, StrBlobPtrError::kDecrefPastBegin);
+
+  auto ret = *this;
+  ret.curr_ -= n;
+  return ret;
 }
 
-StrBlobPtr & StrBlobPtr::operator++(){
-	curr++; // 存在尾后迭代器, 特殊处理
-	auto ret=wptr.lock();
-	if(!ret) throw std::runtime_error("unbound StrBlobPtr");
-	if(curr>ret->size()) throw std::out_of_range("increment pase end of StrBlobPtr");
-	return *this;
-}
-StrBlobPtr StrBlobPtr::operator++(int){
-	auto ret=*this;
-	++*this;
-	return ret;
+bool StrBlobPtr::operator!=(const StrBlobPtr &rhs) {
+  auto lsp = wptr_.lock();
+  auto rsp = rhs.wptr_.lock();
+  if (!lsp || !rsp) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  return (lsp == rsp) && (curr_ != rhs.curr_);
 }
 
-StrBlobPtr& StrBlobPtr::operator--(){
-	curr--;
-	check(curr, "decrement past begin of StrBlobPtr");
-	return *this;
+std::string &StrBlobPtr::operator*() const {
+  RankType modified_rank = curr_;
+  CheckDeref(modified_rank, StrBlobPtrError::kDerefPastEnd);
+  auto def = wptr_.lock();
+  return (*def)[curr_];
 }
-StrBlobPtr StrBlobPtr::operator--(int){
-	auto ret=*this;
-	--*this;
-	return ret;
-}
-
-StrBlobPtr StrBlobPtr::operator+(const int &n){
-	check(curr+n, n+" increment past end of StrBlobPtr");
-	auto ret=*this;
-	ret.curr+=n;
-	return ret;
-}
-StrBlobPtr StrBlobPtr::operator-(const int &n){
-	check(curr+n, n+" decrement past end of StrBlobPtr");
-	auto ret=*this;
-	ret.curr-=n;
-	return ret;
+std::string *StrBlobPtr::operator->() const {
+  return &this->operator*();
 }
 
-bool StrBlobPtr::operator!=(const StrBlobPtr &rhs){
-	auto lsp=wptr.lock();
-	auto rsp=rhs.wptr.lock();
-	if(!lsp || !rsp) throw std::runtime_error("StrBlobPtr nullptr!");
-	return (lsp==rsp)&&(curr!=rhs.curr); // 前提指向同一个sp, 然后判断位置
+void StrBlobPtr::Check(RankType modified_rank, const char *msg) const {
+  auto ret = wptr_.lock();
+  if (!ret) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  if (modified_rank > ret->size()) {
+    throw std::out_of_range(msg);
+  }
+}
+void StrBlobPtr::CheckDeref(RankType modified_rank, const char *msg) const {
+  auto ret = wptr_.lock();
+  if (!ret) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  if (modified_rank >= ret->size()) {
+    throw std::out_of_range(msg);
+  }
+}
+
+
+ConstStrBlobPtr::ConstStrBlobPtr(StrBlob &a, RankType rank)
+    : curr_(rank), wptr_(a.data_) {}
+
+ConstStrBlobPtr &ConstStrBlobPtr::operator++() {
+  // 保证异常安全, 先检测改变后的状态
+  RankType modified_rank = curr_ + 1;
+  Check(modified_rank, StrBlobPtrError::kIncrefPastEnd);
+
+  ++curr_;
+  return *this;
+}
+ConstStrBlobPtr ConstStrBlobPtr::operator++(int) & {
+  auto ret = *this;
+  this->operator++();
+  return ret;
+}
+ConstStrBlobPtr &ConstStrBlobPtr::operator--() {
+  RankType modified_rank = curr_ - 1;
+  Check(modified_rank, StrBlobPtrError::kDecrefPastBegin);
+
+  --curr_;
+  return *this;
+}
+ConstStrBlobPtr ConstStrBlobPtr::operator--(int) & {
+  auto ret = *this;
+  this->operator--();
+  return ret;
+}
+ConstStrBlobPtr ConstStrBlobPtr::operator+(const int &n) {
+  RankType modified_rank = curr_ + n;
+  Check(modified_rank, StrBlobPtrError::kIncrefPastEnd);
+
+  auto ret = *this;
+  ret.curr_ += n;
+  return ret;
+}
+ConstStrBlobPtr ConstStrBlobPtr::operator-(const int &n) {
+  RankType modified_rank = curr_ - n;
+  Check(modified_rank, StrBlobPtrError::kDecrefPastBegin);
+
+  auto ret = *this;
+  ret.curr_ -= n;
+  return ret;
+}
+
+bool ConstStrBlobPtr::operator!=(const ConstStrBlobPtr &rhs) {
+  auto lsp = wptr_.lock();
+  auto rsp = rhs.wptr_.lock();
+  if (!lsp || !rsp) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  return (lsp == rsp) && (curr_ != rhs.curr_);
+}
+
+const std::string &ConstStrBlobPtr::operator*() const {
+  RankType modified_rank = curr_;
+  CheckDeref(modified_rank, StrBlobPtrError::kDerefPastEnd);
+  auto def = wptr_.lock();
+  return (*def)[curr_];
+}
+const std::string *ConstStrBlobPtr::operator->() const {
+  return &this->operator*();
+}
+
+void ConstStrBlobPtr::Check(RankType modified_rank, const char *msg) const {
+  auto ret = wptr_.lock();
+  if (!ret) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  if (modified_rank > ret->size()) {
+    throw std::out_of_range(msg);
+  }
+}
+void ConstStrBlobPtr::CheckDeref(RankType modified_rank, const char *msg) const {
+  auto ret = wptr_.lock();
+  if (!ret) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  if (modified_rank >= ret->size()) {
+    throw std::out_of_range(msg);
+  }
 }

@@ -2,8 +2,10 @@
 # define SALES_DATA_H
 #include <string>
 struct Sales_data {
-  std::string bookNo;
-  unsigned units_sold = 0;
-  double revenue = 0.0;
+  Sales_data() = default;
+  explicit Sales_data(std::string bookNo) : bookNo_(std::move(bookNo)) {};
+  std::string bookNo_;
+  unsigned units_sold_ = 0;
+  double revenue_ = 0.0;
 };
 # endif

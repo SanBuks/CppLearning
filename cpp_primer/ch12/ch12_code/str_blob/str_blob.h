@@ -32,6 +32,7 @@ class StrBlob {
   std::string &operator[](RankType rank);
 
   void PushBack(const std::string &t);
+  void PushBack(std::string &&t);
   void PopBack();
 
   const std::string &Front() const;

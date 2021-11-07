@@ -169,7 +169,6 @@ int main() {
 # 2.38 decltype 与 auto 区别
 > 说明由decltype 指定类型和由auto指定类型有何区别。请举一个例子，decltype指定的类型与auto指定的类型一样；再举一个例子，decltype指定的类型与auto指定的类型不一样。
 
-- decltype结果类型与表达式形式密切相关:
-    1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
-    2. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
-    3. 数组对象在 auto 推断中会产生退化 (除非用 auto &it = array 指向数组), decltype() 保留数组类型
+1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
+2. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
+3. 数组对象在 auto 推断中会产生退化 (除非用 auto &it = array 指向数组), decltype() 保留数组类型

@@ -37,26 +37,32 @@ vector<string> v7{ 10, "hi" };  // 10个元素 {"hi", "hi", ..., "hi"}
 #include <iostream>
 #include <vector>
 int main(){
-	int a;
-	std::vector<int> v;
-	while(std::cin>>a)
-		v.push_back(a);
-	for(const auto &it : v)
-		std::cout<<it<<" ";
-	std::cout<<std::endl;
-	// 邻接求值
-	if(v.size()>1){ // 判断是否有邻接数
-		for(decltype(v.size()) index=1; index<v.size(); ++index)
-			std::cout<<v[index]+v[index-1]<<" ";
-	}
-	// 前后求值
-	if(!v.empty()){
-		if(v.size()>1) // 注意 只有一个元素用 <= 会发生错误
-			for(decltype(v.size()) b=0, e=v.size()-1; b<=e; ++b, --e) 
-				std::cout<<v[b]+v[e]<<" ";
-		else std::cout<<2*v[0];
-	}
-	return 0;
+  int a;
+  std::vector<int> v;
+  while (std::cin >> a) {
+    v.push_back(a);
+  }
+  for (const auto &it: v) {
+    std::cout << it << " ";
+  }
+  std::cout << std::endl;
+  // 邻接求值
+  if (v.size() > 1) { // 判断是否有邻接数
+    for (decltype(v.size()) index = 1; index < v.size(); ++index) {
+      std::cout << v[index] + v[index - 1] << " ";
+    }
+  }
+  // 前后求值
+  if (!v.empty()) {
+    if (v.size() > 1) { // 注意 只有一个元素用 <= 会发生错误
+      for (decltype(v.size()) b = 0, e = v.size() - 1; b <= e; ++b, --e) {
+        std::cout << v[b] + v[e] << " ";
+      }
+    } else {
+      std::cout << 2 * v[0];
+    } 
+  }
+  return 0;
 }
 ```
 
@@ -66,23 +72,26 @@ int main(){
 #include <iostream>
 #include <vector>
 int main(){
-	int a;
-	std::vector<int> v;
-	while(std::cin>>a)
-		v.push_back(a);
+  int a;
+  std::vector<int> v;
+  
+  while (std::cin >> a) {
+    v.push_back(a);
+  }
+  // 邻接求值
+  if (v.size() > 1) {  // 判断是否有邻接数
+    for (auto it = v.begin() + 1; it != v.end(); ++it) {
+      std::cout << *it + *(it - 1) << " ";
+    }
+  }
+  // 前后求值
+  if (!v.empty()) {
+    for (auto b = v.begin(), e = v.end() - 1; b <= e; ++b, --e) {
+      std::cout << *b + *e << " ";
+    }
+  }
 
-	// 邻接求值
-	if(v.size()>1){ // 判断是否有邻接数
-		for(auto it=v.begin()+1; it!=v.end(); ++it)
-			std::cout<<*it+*(it-1)<<" ";
-	}
-
-	// 前后求值
-	if(!v.empty())
-		for(auto b=v.begin(), e=v.end()-1 ; b<=e; ++b, --e) 
-			std::cout<<*b+*e<<" ";
-
-	return 0;
+  return 0;
 }
 ```
 
@@ -95,20 +104,21 @@ int main(){
 > 假设txt_size是一个无参函数，它的返回值是int。请回答下列哪个定义是非法的，为什么？
 ```c++
 unsigned buf_size = 1024;
-int ia[buf_size];  // 合法
-int ia[4 * 7 - 14]; // 合法
-int ia[txt_size()];  // 取决于txt_size是否是 constexpr函数
-char st[11] = "fundamental"; // 非法, 11+1('\0')
+int ia[buf_size];             // 合法
+int ia[4 * 7 - 14];           // 合法
+int ia[txt_size()];           // 取决于 txt_size 是否是 constexpr 函数
+char st[11] = "fundamental";  // 非法, 11+1('\0')
 ```
 
 # 3.28 静态和非静态 默认初始化
 > 下列数组中元素的值是什么？
 ```c++
-string sa[10];  // dynamic init 都是 空串
-int ia[10]; // zero init 都是 0
+string sa[10];     // dynamic init 都是 空串
+int ia[10];        // zero init 都是 0
 int main() {
-	string sa2[10];  // dynamic init 空串
-	int ia2[10];  // dynamic init 随机值
+  string sa2[10];  // dynamic init 空串
+  int ia2[10];     // dynamic init 随机值
+  return 0;
 }
 ```
 
@@ -124,15 +134,15 @@ int main() {
 ```c++
 #include <iostream>
 #include <cstring>
-
-int main(){
-	const char *p1="123";
-	const char *p2="456789";
-	char *q=new char [strlen(p1)+strlen(p2)+1];
-	strcpy(q,p1);
-	strcat(q,p2);
-	std::cout<<q;
-	return 0;
+  
+int main() {
+  const char *p1 = "123";
+  const char *p2 = "456789";
+  char *q = new char[strlen(p1) + strlen(p2) + 1];
+  strcpy(q, p1);
+  strcat(q, p2);
+  std::cout << q;
+  return 0;
 }
 ```
 
@@ -140,33 +150,43 @@ int main(){
 > 编写3个不同版本的程序，令其均能输出ia的元素。 版本1使用范围for语句管理迭代过程；版本2和版本3都使用普通for语句，其中版本2要求使用下标运算符，版本3要求使用指针。 此外，在所有3个版本的程序中都要直接写出数据类型，而不能使用类型别名、auto关键字和decltype关键字。
 ```c++
 int ia[3][4];
-for(const auto (&row) : ia){  
-    for(const auto &col : row)
-        cout<<col<<" "; 
+for (const auto (&row): ia) {
+  for (const auto &col: row) {
+    cout << col << " ";
+  }
+}
 
-for(size_t row=0;row<3;++row)
-    for(size_t col=0;col<4;++col)
-        cout<<ia[row][col]<<" ";
+for (size_t row = 0; row < 3; ++row) {
+  for (size_t col = 0; col < 4; ++col) {
+    cout << ia[row][col] << " ";
+  }
+}
 
-for(int (*row)[4]=ia;row!=ia+3;++row)
-    for(int *col=*row;col!=*row+4;++col) 
-        cout<<*col<<" ";
+for (int (*row)[4] = ia; row != ia + 3; ++row) {
+  for (int *col = *row; col != *row + 4; ++col) {
+    cout << *col << " ";
+  }
+}
 ```
 
 # 3.44 for-range decltype 遍历多维数组
 > 改写上一个练习中的程序，使用类型别名来代替循环控制变量的类型。
 ```c++
-int ia[3][4]={};
-for(decltype(ia[0]) &row : ia)  
-    for(decltype(ia[0][0]) col : row)
-        cout<<col<<" ";
+int ia[3][4] = {};
+for (decltype(ia[0]) row: ia) {
+  for (decltype(ia[0][0]) col: row) {
+    cout << col << " ";
+  }
+}
 ```
 
 # 3.45 for-range auto 遍历多维数组
 > 再一次改写程序，这次使用 auto 关键字。
 ```c++
 int ia[3][4];
-for(const auto (&row) : ia){  
-    for(const auto &col : row)
-        cout<<col<<" ";   
+for (const auto (&row): ia) {
+  for (const auto &col: row) {
+    cout << col << " ";
+  }
+}
 ```

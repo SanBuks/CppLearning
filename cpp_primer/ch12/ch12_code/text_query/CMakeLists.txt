@@ -1,7 +1,6 @@
 project(text_query LANGUAGES CXX)
 
 add_executable(text_query_test text_query_test.cc)
-target_link_directories(text_query_test PRIVATE ${str_blob_BINARY_DIR})
 target_link_libraries(text_query_test str_blob)
 target_include_directories(text_query_test
                            PRIVATE ${str_blob_SOURCE_DIR}

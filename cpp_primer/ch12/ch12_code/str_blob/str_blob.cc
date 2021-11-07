@@ -24,6 +24,10 @@ std::string &StrBlob::operator[](RankType rank) {
 void StrBlob::PushBack(const std::string &t) {
   data_->push_back(t);
 }
+void StrBlob::PushBack(std::string &&t) {
+  data_->push_back(std::move(t));
+}
+
 void StrBlob::PopBack() {
   CheckDeref(0, StrBlobError::kPopBackEmptyError);
   data_->pop_back();

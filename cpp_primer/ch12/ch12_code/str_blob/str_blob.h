@@ -13,6 +13,9 @@ class StrBlob {
 
   friend class StrBlobPtr;
   friend class ConstStrBlobPtr;
+  friend bool operator==(const StrBlob &lhs, const StrBlob &rhs);
+  friend bool operator!=(const StrBlob &lhs, const StrBlob &rhs);
+  friend bool operator<(const StrBlob &lhs, const StrBlob &rhs);
 
  public:
   typedef std::vector<std::string>::size_type SizeType;
@@ -44,6 +47,7 @@ class StrBlob {
   StrBlobPtr End();
   ConstStrBlobPtr CBegin();
   ConstStrBlobPtr CEnd();
+
 
  private:
   // 检测 即将改变的下标 是否在 [0, size) 中

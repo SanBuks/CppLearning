@@ -120,3 +120,21 @@ void swap(StrVec &lhs, StrVec &rhs) {
   swap(lhs.elements_, rhs.elements_);
   swap(lhs.first_free_, rhs.first_free_);
 }
+bool operator==(const StrVec &lhs, const StrVec &rhs) {
+  return lhs.Size() == rhs.Size() &&
+         std::equal(lhs.elements_, lhs.first_free_, rhs.elements_);
+}
+bool operator!=(const StrVec &lhs, const StrVec &rhs) {
+  return !(lhs == rhs);
+}
+bool operator<(const StrVec &lhs, const StrVec &rhs) {
+  if (lhs == rhs) { return false; }
+  bool is_shorter = lhs.Size() <= rhs.Size();
+  size_t min_size = is_shorter ? lhs.Size() : rhs.Size();
+  for (size_t i = 0; i != min_size; ++i) {
+    if (rhs[i] < lhs[i]) {
+      return false;
+    }
+  }
+  return is_shorter;
+}

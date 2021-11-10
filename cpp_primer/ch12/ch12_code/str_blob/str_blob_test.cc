@@ -8,6 +8,7 @@
 
 #include "str_blob.h"
 #include "str_blob_data.h"
+#include "str_blob_ptr_ptr.h"
 
 void StrBlobTest() {
   StrBlob str1;
@@ -70,23 +71,11 @@ void ReadFileTest() {
   std::cout << "\n" << strb[1] << "\n";
 }
 
-//void SBPP_test(){
-//	StrBlob str={"123", "234", "345"};
-//	auto it=str.begin();
-//	SBPP sbpp(it+1);
-//	std::cout<<**sbpp<<std::endl;
-//	std::cout<<sbpp->getcurr()<<std::endl;
-//}
-
-using namespace std;
 int main() {
-  return 0;
-}
-
-//int main() {
 //  StrBlobTest();
 //  StrBlobPtrTest();
 //  ConstStrBlobPtrTest();
 //  ReadFileTest();
-//  return 0;
-//}
+//  StrBlobPtrPtrTest();
+  return 0;
+}

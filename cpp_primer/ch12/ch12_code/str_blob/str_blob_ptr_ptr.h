@@ -1,17 +1,11 @@
 #include <memory>
 #include "str_blob.h"
-class SBPP{
-private:
-	std::shared_ptr<StrBlobPtr> sbpp;
-public:
-	SBPP()=default;
-	SBPP(const StrBlobPtr &sbp):sbpp(std::make_shared<StrBlobPtr>(sbp)){}
 
-	StrBlobPtr &operator*(){
-		return *sbpp;
-	}
-
-	StrBlobPtr *operator->(){
-		return & this->operator*();
-	}
+class StrBlobPtrPtr {
+ public:
+  explicit StrBlobPtrPtr(StrBlobPtr &sbp) : str_blob_ptr_ptr_(&sbp) {}
+  StrBlobPtr &operator*() { return *str_blob_ptr_ptr_; }
+  StrBlobPtr *operator->() { return &this->operator*(); }
+ private:
+  StrBlobPtr *str_blob_ptr_ptr_;
 };

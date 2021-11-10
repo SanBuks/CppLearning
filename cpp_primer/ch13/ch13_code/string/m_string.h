@@ -8,6 +8,9 @@
 class String {
 
   friend std::ostream &operator<<(std::ostream &io, const String &str);
+  friend bool operator==(const String &lhs, const String &rhs);
+  friend bool operator!=(const String &lhs, const String &rhs);
+  friend bool operator<(const String &lhs, const String &rhs);
   friend void swap(String &lhs, String &rhs);
 
  public:
@@ -27,6 +30,9 @@ class String {
   const char *End() const { return first_free_; }
   const char *CBegin() const { return first_elem_; }
   const char *CEnd() const { return first_free_; }
+
+  char &operator[](size_t i) { return *(first_elem_ + i); }
+  const char &operator[](size_t i) const { return *(first_elem_ + i); }
 
   void Append(char c);
 
@@ -48,6 +54,28 @@ std::ostream &operator<<(std::ostream &os, const String &str) {
   std::for_each(str.CBegin(), str.CEnd(),
                 [&os](const char &ch) { os << ch; });
   return os;
+}
+
+bool operator==(const String &lhs, const String &rhs) {
+  return lhs.Size() == rhs.Size() &&
+         std::equal(lhs.first_elem_, lhs.first_free_, rhs.first_elem_,
+                    [](const char&lhs, const char &rhs) { return lhs == rhs; });
+}
+
+bool operator!=(const String &lhs, const String &rhs) {
+  return !(lhs == rhs);
+}
+
+bool operator<(const String &lhs, const String &rhs) {
+  if (lhs == rhs) { return false; }
+  bool is_shorter = lhs.Size() <= rhs.Size();
+  size_t min_size = is_shorter ? lhs.Size() : rhs.Size();
+  for (size_t i = 0; i != min_size; ++i) {
+    if (rhs[i] < lhs[i]) {
+      return false;
+    }
+  }
+  return is_shorter;
 }
 
 void swap(String &lhs, String &rhs) {

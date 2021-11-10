@@ -21,6 +21,16 @@ std::string &StrBlob::operator[](RankType rank) {
   return const_cast<std::string &>(static_cast<const StrBlob&>(*this)[rank]);
 }
 
+bool operator==(const StrBlob &lhs, const StrBlob &rhs) {
+  return *lhs.data_ == *rhs.data_;
+}
+bool operator!=(const StrBlob &lhs, const StrBlob &rhs) {
+  return !(lhs == rhs);
+}
+bool operator<(const StrBlob &lhs, const StrBlob &rhs) {
+  return *lhs.data_ < *rhs.data_;
+}
+
 void StrBlob::PushBack(const std::string &t) {
   data_->push_back(t);
 }

@@ -50,22 +50,13 @@ StrBlobPtr StrBlobPtr::operator-(const int &n) {
   return ret;
 }
 
-bool StrBlobPtr::operator!=(const StrBlobPtr &rhs) {
-  auto lsp = wptr_.lock();
-  auto rsp = rhs.wptr_.lock();
-  if (!lsp || !rsp) {
-    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
-  }
-  return (lsp == rsp) && (curr_ != rhs.curr_);
-}
-
-std::string &StrBlobPtr::operator*() const {
+std::string &StrBlobPtr::operator*() {
   RankType modified_rank = curr_;
   CheckDeref(modified_rank, StrBlobPtrError::kDerefPastEnd);
   auto def = wptr_.lock();
   return (*def)[curr_];
 }
-std::string *StrBlobPtr::operator->() const {
+std::string *StrBlobPtr::operator->() {
   return &this->operator*();
 }
 
@@ -143,13 +134,13 @@ bool ConstStrBlobPtr::operator!=(const ConstStrBlobPtr &rhs) {
   return (lsp == rsp) && (curr_ != rhs.curr_);
 }
 
-const std::string &ConstStrBlobPtr::operator*() const {
+const std::string &ConstStrBlobPtr::operator*() {
   RankType modified_rank = curr_;
   CheckDeref(modified_rank, StrBlobPtrError::kDerefPastEnd);
   auto def = wptr_.lock();
   return (*def)[curr_];
 }
-const std::string *ConstStrBlobPtr::operator->() const {
+const std::string *ConstStrBlobPtr::operator->() {
   return &this->operator*();
 }
 
@@ -170,4 +161,28 @@ void ConstStrBlobPtr::CheckDeref(RankType modified_rank, const char *msg) const 
   if (modified_rank >= ret->size()) {
     throw std::out_of_range(msg);
   }
+}
+
+bool operator==(const StrBlobPtr &lhs, const StrBlobPtr &rhs) {
+  auto lsp = lhs.wptr_.lock();
+  auto rsp = rhs.wptr_.lock();
+  if (!lsp || !rsp) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  return (lsp == rsp) && (lhs.curr_ == rhs.curr_);
+}
+
+bool operator!=(const StrBlobPtr &lhs, const StrBlobPtr &rhs) {
+  return !(lhs == rhs);
+}
+bool operator<(const StrBlobPtr &lhs, const StrBlobPtr &rhs) {
+  auto lsp = lhs.wptr_.lock();
+  auto rsp = rhs.wptr_.lock();
+  if (!lsp || !rsp) {
+    throw std::runtime_error(StrBlobPtrError::kUnBoundError);
+  }
+  if (lsp != rsp) {
+    throw std::runtime_error(StrBlobPtrError::kNotSameStrBlob);
+  }
+  return lhs.curr_ < rhs.curr_;
 }

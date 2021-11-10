@@ -5,9 +5,17 @@
 #include <vector>
 
 class StrBlob;
+class StrBlobPtr;
+
+bool operator!=(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
+bool operator==(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
+bool operator<(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
 
 // 类 随机迭代器类
 class StrBlobPtr {
+  friend bool operator!=(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
+  friend bool operator==(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
+  friend bool operator<(const StrBlobPtr &lhs, const StrBlobPtr &rhs);
  public:
   typedef std::vector<std::string>::size_type RankType;
 
@@ -26,10 +34,8 @@ class StrBlobPtr {
   StrBlobPtr operator+(const int &n);
   StrBlobPtr operator-(const int &n);
 
-  bool operator!=(const StrBlobPtr &rhs);
-
-  std::string &operator*() const;
-  std::string *operator->() const;
+  std::string &operator*();
+  std::string *operator->();
 
  private:
   // 检测 即将改变的下标 是否在 [0, size] 中
@@ -62,8 +68,8 @@ class ConstStrBlobPtr {
 
   bool operator!=(const ConstStrBlobPtr &rhs);
 
-  const std::string &operator*() const;
-  const std::string *operator->() const;
+  const std::string &operator*();
+  const std::string *operator->();
 
  private:
   // 检测 即将改变的下标 是否在 [0, size] 中
@@ -74,4 +80,5 @@ class ConstStrBlobPtr {
   RankType curr_;
   std::weak_ptr<std::vector<std::string>> wptr_;
 };
+
 #endif

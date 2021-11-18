@@ -1,0 +1,4 @@
+namespace data_path {
+
+    const char* const kQueryDataPath = "@QueryDataPath@";
+}

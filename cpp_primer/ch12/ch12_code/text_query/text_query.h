@@ -41,10 +41,9 @@ TextQuery::TextQuery(std::ifstream &ifs) : files_(new StrBlob) {
       // 不存在 创建新的 set
       if (!line_ptr) {
         line_ptr.reset(new std::set<size_t>);
-      } else {
-      // 存在 直接插入行号 (从 0 开始)
-        line_ptr->insert(no);
       }
+      // 插入行号 (从 0 开始)
+      line_ptr->insert(no);
     }
   }
 }

@@ -10,25 +10,27 @@
 
 `g++ man.cpp -o atest -g -Wall -std=c++11`  ( g++ 8.3.0 )
 
-# 1.02 main返回的错误标识
+# 1.02 main 返回的错误标识
 > 返回值 -1 通常被当作程序错误的标识，观察你的系统如何处理main返回的错误标识。
 
-`$ echo $?` 打印返回值
+- 一般 main 返回值用于 shell 中, 通过 `$ echo $?` 打印返回值
+- 0 代表成功, 非0 代表错误, 具体的返回值因系统和实现而异, linux 中 shell 一般规定如下, 其他用户可以自定义
+
 
 | 返回值 | 一般意义                                              |
-| ------ | ----------------------------------------------------- |
-| 1      | 通常的错误                                            |
-| 2      | Shell 编程错误                                        |
-| 126    | 命令无法执行                                          |
-| 127    | 命令不存在                                            |
-| 128    | 非法返回值如浮点返回值, 返回值范围为1-255(整型mod256) |
-| 128+n  | 通过信号杀死进程 kill -# (exit 128+#)                 |
-| 130    | 被 ^ + C 终止                                         |
-| 255    | 返回值超出范围如 exit -1;                             |
+| ------  | ----------------------------------------------------- |
+| 1       | 通常的错误                                      |
+| 2       | Shell 编程错误                                  |
+| 126     | 命令无法执行                                     |
+| 127     | 命令不存在                                       |
+| 128     | 非法返回值如浮点返回值, 返回值范围为1-255(整型mod256) |
+| 128 + n | 通过信号杀死进程 kill -# (exit 128+#)              |
+| 130     | 被 ^ + C 终止                                     |
+| 255     | 返回值超出范围如 exit -1;                           |
 
-- 其他值用户可自定义
 ```c
-/* /usr/include/sysexits.h 
+// /usr/include/sysexits.h  为 linux 系统下的退出宏
+/* 
  *  EX_USAGE -- The command was used incorrectly, e.g., with 
  *    the wrong number of arguments, a bad flag, a bad 
  *    syntax in a parameter, or whatever. 
@@ -74,27 +76,27 @@
  *    CANTCREAT, but rather for higher level permissions. 
  */ 
  
-#define EX_OK   0 /* successful termination */ 
- 
-#define EX__BASE  64  /* base value for error messages */ 
- 
-#define EX_USAGE  64  /* command line usage error */ 
-#define EX_DATAERR  65  /* data format error */ 
-#define EX_NOINPUT  66  /* cannot open input */ 
-#define EX_NOUSER 67  /* addressee unknown */ 
-#define EX_NOHOST 68  /* host name unknown */ 
+#define EX_OK   0           /* successful termination */ 
+                 
+#define EX__BASE  64        /* base value for error messages */ 
+                 
+#define EX_USAGE  64        /* command line usage error */ 
+#define EX_DATAERR  65      /* data format error */ 
+#define EX_NOINPUT  66      /* cannot open input */ 
+#define EX_NOUSER 67        /* addressee unknown */ 
+#define EX_NOHOST 68        /* host name unknown */ 
 #define EX_UNAVAILABLE  69  /* service unavailable */ 
-#define EX_SOFTWARE 70  /* internal software error */ 
-#define EX_OSERR  71  /* system error (e.g., can't fork) */ 
-#define EX_OSFILE 72  /* critical OS file missing */ 
-#define EX_CANTCREAT  73  /* can't create (user) output file */ 
-#define EX_IOERR  74  /* input/output error */ 
-#define EX_TEMPFAIL 75  /* temp failure; user is invited to retry */ 
-#define EX_PROTOCOL 76  /* remote error in protocol */ 
-#define EX_NOPERM 77  /* permission denied */ 
-#define EX_CONFIG 78  /* configuration error */ 
+#define EX_SOFTWARE 70      /* internal software error */ 
+#define EX_OSERR  71        /* system error (e.g., can't fork) */ 
+#define EX_OSFILE 72        /* critical OS file missing */ 
+#define EX_CANTCREAT  73    /* can't create (user) output file */ 
+#define EX_IOERR  74        /* input/output error */ 
+#define EX_TEMPFAIL 75      /* temp failure; user is invited to retry */ 
+#define EX_PROTOCOL 76      /* remote error in protocol */ 
+#define EX_NOPERM 77        /* permission denied */ 
+#define EX_CONFIG 78        /* configuration error */ 
  
-#define EX__MAX 78  /* maximum listed value */ 
+#define EX__MAX 78          /* maximum listed value */ 
 ```
 
 # 1.08 嵌套注释
@@ -110,11 +112,11 @@ std::cout << /* "*/" /* "/*" */;  // 正确
 > 对比for循环和while循环，两种形式的优缺点各是什么？
 
 1. for 循环 :  
-	- 优点 : 控制变量的初始化和修改都放在头部分, 形式较简洁, 且特别适用于循环次数已知的情况 
-	- 缺点 : 控制变量在循环结束后自动释放, 无法跟踪
+  - 优点: 控制变量的初始化和修改都放在头部分, 形式较简洁, 且特别适用于循环次数已知的情况 
+  - 缺点: 控制变量在循环结束后自动释放, 无法跟踪
 2. while 循环 : 
-	- 优点 :  控制变量的初始化一般放在语句之前, 修改一般放在循环体中, 适用于循环次数不知的情况 
-	- 缺点 : 循环控制变量需要额外设立, 自己释放, 形式上不如for语句简洁
+  - 优点: 控制变量的初始化一般放在语句之前, 修改一般放在循环体中, 适用于循环次数不知的情况 
+  - 缺点: 循环控制变量需要额外设立, 自己释放, 形式上不如for语句简洁
 
 # 1.15 错误信息类别
 > 编写程序，包含第14页“再探编译”中讨论的常见错误。熟悉编译器生成的错误信息。

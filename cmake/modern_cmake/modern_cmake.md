@@ -27,3 +27,6 @@
   - scripts
     - helper.py
 ```
+
+- 在 include 内设本项目文件夹和多个子项目文件夹有助于避免头文件冲突
+- 如 #include "project/sub1/static/yyy.h"

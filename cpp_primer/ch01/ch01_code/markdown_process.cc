@@ -92,6 +92,7 @@ int ProcessMd() {
   bool code_line_flag = false;
 
   while(getline(ifs, line)) {
+    // 如果是 code_fence 内的代码
     if (code_line_flag) {
       // 如果是 code_fence 注释结束符
       if (IsCodeLine(line)) {
@@ -100,7 +101,7 @@ int ProcessMd() {
       } else {
         ofs << line << "\n";
       }
-    // 正常文本
+    // 如果是正常文本
     } else {
       code_line_flag = IsCodeLine(line);
       ofs << InsertCommentFlag(line) << "\n";

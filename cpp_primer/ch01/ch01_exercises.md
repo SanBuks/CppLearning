@@ -14,93 +14,30 @@
 > 返回值 -1 通常被当作程序错误的标识，观察你的系统如何处理main返回的错误标识。
 
 - 一般 main 返回值用于 shell 中, 通过 `$ echo $?` 打印返回值
-- 0 代表成功, 非0 代表错误, 具体的返回值因系统和实现而异, linux 中 shell 一般规定如下, 其他用户可以自定义
-
-
-| 返回值 | 一般意义                                              |
-| ------  | ----------------------------------------------------- |
-| 1       | 通常的错误                                      |
-| 2       | Shell 编程错误                                  |
-| 126     | 命令无法执行                                     |
-| 127     | 命令不存在                                       |
-| 128     | 非法返回值如浮点返回值, 返回值范围为1-255(整型mod256) |
-| 128 + n | 通过信号杀死进程 kill -# (exit 128+#)              |
-| 130     | 被 ^ + C 终止                                     |
-| 255     | 返回值超出范围如 exit -1;                           |
-
+- 大致有三种规定的返回值的来源: C 语言标准规定, Bash Shell,  BSD
 ```c
-// /usr/include/sysexits.h  为 linux 系统下的退出宏
-/* 
- *  EX_USAGE -- The command was used incorrectly, e.g., with 
- *    the wrong number of arguments, a bad flag, a bad 
- *    syntax in a parameter, or whatever. 
- *  EX_DATAERR -- The input data was incorrect in some way. 
- *    This should only be used for user's data & not 
- *    system files. 
- *  EX_NOINPUT -- An input file (not a system file) did not 
- *    exist or was not readable.  This could also include 
- *    errors like "No message" to a mailer (if it cared 
- *    to catch it). 
- *  EX_NOUSER -- The user specified did not exist.  This might 
- *    be used for mail addresses or remote logins. 
- *  EX_NOHOST -- The host specified did not exist.  This is used 
- *    in mail addresses or network requests. 
- *  EX_UNAVAILABLE -- A service is unavailable.  This can occur 
- *    if a support program or file does not exist.  This 
- *    can also be used as a catchall message when something 
- *    you wanted to do doesn't work, but you don't know 
- *    why. 
- *  EX_SOFTWARE -- An internal software error has been detected. 
- *    This should be limited to non-operating system related 
- *    errors as possible. 
- *  EX_OSERR -- An operating system error has been detected. 
- *    This is intended to be used for such things as "cannot 
- *    fork", "cannot create pipe", or the like.  It includes 
- *    things like getuid returning a user that does not 
- *    exist in the passwd file. 
- *  EX_OSFILE -- Some system file (e.g., /etc/passwd, /etc/utmp, 
- *    etc.) does not exist, cannot be opened, or has some 
- *    sort of error (e.g., syntax error). 
- *  EX_CANTCREAT -- A (user specified) output file cannot be 
- *    created. 
- *  EX_IOERR -- An error occurred while doing I/O on some file. 
- *  EX_TEMPFAIL -- temporary failure, indicating something that 
- *    is not really an error.  In sendmail, this means 
- *    that a mailer (e.g.) could not create a connection, 
- *    and the request should be reattempted later. 
- *  EX_PROTOCOL -- the remote system returned something that 
- *    was "not possible" during a protocol exchange. 
- *  EX_NOPERM -- You did not have sufficient permission to 
- *    perform the operation.  This is not intended for 
- *    file system problems, which should use NOINPUT or 
- *    CANTCREAT, but rather for higher level permissions. 
- */ 
- 
-#define EX_OK   0           /* successful termination */ 
-                 
-#define EX__BASE  64        /* base value for error messages */ 
-                 
-#define EX_USAGE  64        /* command line usage error */ 
-#define EX_DATAERR  65      /* data format error */ 
-#define EX_NOINPUT  66      /* cannot open input */ 
-#define EX_NOUSER 67        /* addressee unknown */ 
-#define EX_NOHOST 68        /* host name unknown */ 
-#define EX_UNAVAILABLE  69  /* service unavailable */ 
-#define EX_SOFTWARE 70      /* internal software error */ 
-#define EX_OSERR  71        /* system error (e.g., can't fork) */ 
-#define EX_OSFILE 72        /* critical OS file missing */ 
-#define EX_CANTCREAT  73    /* can't create (user) output file */ 
-#define EX_IOERR  74        /* input/output error */ 
-#define EX_TEMPFAIL 75      /* temp failure; user is invited to retry */ 
-#define EX_PROTOCOL 76      /* remote error in protocol */ 
-#define EX_NOPERM 77        /* permission denied */ 
-#define EX_CONFIG 78        /* configuration error */ 
- 
+// 1. C 语言标准规定 两种宏
+EXIT_SUCCESS
+EXIT_FAILURE
+
+// 2. Bash Shell 规定 若干个退出值, Bash Shell 中退出值必须 是 [0, 255] 整数, 超出范围则未定义 其他 Shell 则有不同
+// 1       : 通常的错误
+// 2       : Shell 内的编程错误
+// 126     : 命令无法执行
+// 127     : 命令不存在
+// 128     : 非法返回值如浮点返回值 exit 0.2
+// 128 + n : 通过信号杀死进程 kill -#
+// 130     : 被 ^ + C 终止
+// 255     : 返回值超出范围如 exit -1
+
+// 3. BSD 定义的头文件 /usr/include/sysexits.h, 范围为 [64, 78]
+#define EX__BASE  64        /* base value for error messages */
 #define EX__MAX 78          /* maximum listed value */ 
 ```
 
 # 1.08 嵌套注释
-> 指出下列哪些输出语句是合法的（如果有的话），预测编译这些语句会产生什么样的结果，实际编译这些语句来验证你的答案(编写一个小程序，每次将上述一条语句作为其主体)，改正每个编译错误。
+> 指出下列哪些输出语句是合法的（如果有的话），预测编译这些语句会产生什么样的结果，
+> 实际编译这些语句来验证你的答案(编写一个小程序，每次将上述一条语句作为其主体)，改正每个编译错误。
 ```c++
 std::cout << "/*"; // 正确
 std::cout << "*/"; // 正确
@@ -108,7 +45,7 @@ std::cout << "*/"; // 正确
 std::cout << /* "*/" /* "/*" */;  // 正确
 ```
 
-# 1.14 for循环和while循环
+# 1.14 for 循环和 while 循环
 > 对比for循环和while循环，两种形式的优缺点各是什么？
 
 1. for 循环 :  

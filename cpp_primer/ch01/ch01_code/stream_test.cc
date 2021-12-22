@@ -3,8 +3,10 @@
 
 #include "stream_test_data_config.h"
 
+// 显示 cin 读取时状态位变化
+
 int main() {
-  std::ifstream file(data_path::kStreamTestDataPath);
+  std::ifstream file((data_path::kStreamTestDataPath));
   if (file) {
     int times = 0, number;
     while (file) {

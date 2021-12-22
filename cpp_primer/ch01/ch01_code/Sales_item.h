@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+// 原书提供的代码, 只供 练习代码 调用
+
 class Sales_item {
 // these declarations are explained section 7.2.1, p. 270 
 // and in chapter 14, pages 557, 558, 561

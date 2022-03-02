@@ -1,9 +1,8 @@
 #include <iostream>
+
 #include "sales_data.h"
 
-using std::string;
-using std::cin;
-using std::cout;
+using namespace std;
 
 int main() {
   SalesData d1, d2, d3;

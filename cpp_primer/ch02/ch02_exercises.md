@@ -23,16 +23,16 @@ std::cout << u - i << std::endl;   // 0
 # 2.05 字面值常量与类型前后缀
 > 指出下述字面值的数据类型并说明每一组内几种字面值的区别：
 ```c++
-// 'a',  L'a',    "a",         L"a" 
+// 'a',  L'a',    "a",         L"a"
 // char, wchar_t, const char*, const wchar_t*
 
-// 10,  10u,      10L,  10uL,          012,       0xC 
+// 10,  10U,      10L,  10UL,          012,       0xC
 // int, unsigned, long, unsigned long, int 八进制, int 十六进制
 
-// 3.14,   3.14F, 3.14L 
+// 3.14,   3.14F, 3.14L
 // double, float, long double
 
-// 10,  10u,      10.,    10e-2 
+// 10,  10U,      10.,    10E-2
 // int, unsigned, double, double
 ```
 
@@ -53,7 +53,7 @@ int month = 09, day = 07;  // 八进制 前者出错 后者为7
 // 3.14e1L
 // 31.4 long double
 
-// 1024f
+// 1024F
 // 1024 float
 
 // 3.14L 
@@ -63,12 +63,11 @@ int month = 09, day = 07;  // 八进制 前者出错 后者为7
 # 2.10 默认初始化与静态内存
 > 下列变量的初值分别是什么？
 ```c++
-std::string global_str;     // 空串
-int global_int;             // 0
-int main()
-{
-    int local_int;          // 未定义
-    std::string local_str;  // 空串
+std::string global_str;   // 空串
+int global_int;           // 0
+int main() {
+  int local_int;          // 未定义
+  std::string local_str;  // 空串
 }
 ```
 
@@ -82,8 +81,8 @@ int main()
 # 2.23 野指针
 > 给定指针 p，你能知道它是否指向了一个合法的对象吗？如果能，叙述判断的思路；如果不能，也请说明原因。
 
-1. raw pointer 不行, 要是能轻易做到的话 C语言 就不容易出内存方面的 bug
-2. smart pointer可以, shared_ptr 和 weak_ptr 就可以分别用 shared_ptr::operator bool() 和 weak_ptr::expired() 判断
+1. raw pointer 不行, 容易产生野指针
+2. smart pointer 可以, shared_ptr 和 weak_ptr 就可以分别用 shared_ptr::operator bool() 和 weak_ptr::expired() 判断
 
 # 2.24 空类型指针
 > 在下面这段代码中为什么 p 合法而 lp 非法？
@@ -96,13 +95,13 @@ long *lp = &i;  // int * 无法转换为 long *
 # 2.27 底层 const 和顶层 const
 > 下面的哪些初始化是合法的？请说明原因。
 ```c++
-int i = -1, &r = 0;         // 非法, 引用r需绑定到一个左值
-int * const p2 = &i2;       // i2 是 const int 非法, 是 int 合法
+int i = -1, &r = 0;         // 非法, 引用 r 需绑定到一个左值
+int * const p2 = &i2;       // i2 若是 const int 非法, 若是 int 合法
 const int i = -1, &r = 0;   // 合法, 初始化底层引用的对象可以是表达式结果, 非常量对象, 字面值, 可转换类型的对象
-const int *const p3 = &i2;  // 合法
-const int *p1 = &i2;        // 合法
-const int &const r2;        // 非法, 引用非对象没有顶层之说
-const int i2 = i, &r = i;   // 合法
+const int * const p3 = &i2; // 合法, i2 需是 int 类型 
+const int *p1 = &i2;        // 合法, i2 需是 int 类型 
+const int & const r2;       // 非法, 引用非对象没有顶层之说
+const int i2 = i, &r = i;   // 合法, i2 需是 int 类型 
 ```
 
 # 2.28 底层 const 和顶层 const
@@ -177,6 +176,6 @@ int main() {
 > 说明由decltype 指定类型和由auto指定类型有何区别。
 > 请举一个例子，decltype指定的类型与auto指定的类型一样；再举一个例子，decltype指定的类型与auto指定的类型不一样。
 
-1. auto 忽略顶层const, 忽略& 而 decltype 不忽略
+1. auto 忽略顶层 const, 以引用所指类型为准, 而 decltype 不忽略
 2. decltype 可以用 (), 赋值表达式, 解引用等左值表达式来获得相应的引用类型
 3. 数组对象在 auto 推断中会产生退化 (除非用 auto &it = array 指向数组), decltype() 保留数组类型

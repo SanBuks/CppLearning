@@ -13,8 +13,8 @@ double, 需要进行浮点运算, 其中 double 在实际计算过程中要比 f
 # 2.08
 > 请利用转义序列编写一段程序，要求先输出 2M，然后转到新一行。修改程序使其先输出 2，然后输出制表符，再输出 M，最后转到新一行。
 ```c++
-std::cout<<"2M\n"; 
-std::cout<<"2\tM\n";
+std::cout << "2M\n";
+std::cout << "2\tM\n";
 ```
 
 # 2.09
@@ -25,9 +25,14 @@ std::cout<<"2\tM\n";
 (c) double salary = wage = 9999.99;
 (d) int i = 3.14;
 ```c++
-int input_value; std::cin >> input_value;
+int input_value;
+std::cin >> input_value;
+
 double i = {3.14};
-double salary,wage; salary = wage = 9999.99;
+
+double salary, wage;
+salary = wage = 9999.99; 
+
 double i = 3.14;
 ```
 
@@ -63,8 +68,9 @@ int main() {
 > 下面的程序合法吗？如果合法，它将输出什么？
 ```c++
 int i = 100, sum = 0;
-for (int i = 0; i != 10; ++i)
-    sum += i;
+for (int i = 0; i != 10; ++i) {
+  sum += i;
+}
 std::cout << i << " " << sum << std::endl;  // 合法 输出 : 100 55
 ```
 
@@ -196,9 +202,8 @@ decltype(a = b) d = a;  // d : int & | d = a = b = 4
 > 编译下面的程序观察其运行结果，注意，如果忘记写类定义体后面的分号会发生什么情况？记录下相关的信息，以后可能会有用。
 ```c++
 struct Foo { /* 此处为空  */ } // 注意：没有分号
-int main()
-{
-    return 0;
+int main() {
+  return 0;
 }
 /*
 error: expected ‘;’ after struct definition

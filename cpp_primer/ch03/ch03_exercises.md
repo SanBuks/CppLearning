@@ -1,8 +1,9 @@
 # 3.03 getline 与 cin 区别
 > 请说明string类的输入运算符和getline函数分别是如何处理空白字符的。
 
-1. `is >> str;` 忽略空白符, 读入字符直到遇到空白符为止(不包含`\n`), 返回 is 
-2. `getline(is, str)` 忽略空白符, 读入一行直到换行符为止(包含`\n`), 舍弃`\n`后赋予str, 返回 is
+- `is >> str;` 忽略空白符, 读入字符直到遇到空白符为止(不包含`\n`), 返回 is 
+- `getline(is, str)` 忽略空白符, 读入一行直到换行符为止(包含`\n`), 舍弃`\n`后赋予str, 返回 is
+- `>>` 转换为 getline 注意遗留 `\n` 问题
 
 # 3.09 访问容器元素需要判断是否存在
 > 下面的程序有何作用？它合法吗？如果不合法？为什么？
@@ -37,6 +38,7 @@ vector<string> v7{10, "hi"};  // 10个元素 {"hi", "hi", ..., "hi"}
 ```c++
 #include <iostream>
 #include <vector>
+
 int main(){
   int a;
   std::vector<int> v;
@@ -46,22 +48,19 @@ int main(){
   for (const auto &it: v) {
     std::cout << it << " ";
   }
-  std::cout << std::endl;
-  // 邻接求值
-  if (v.size() > 1) { // 判断是否有邻接数
-    for (decltype(v.size()) index = 1; index < v.size(); ++index) {
-      std::cout << v[index] + v[index - 1] << " ";
-    }
+  std::cout << "\n";
+
+  // 邻接求值, 无邻接则不求值
+  for (size_t index = 1; index < v.size(); ++index) {
+    std::cout << v[index] + v[index - 1] << " ";
   }
+  std::cout << "\n";
+
   // 前后求值
-  if (!v.empty()) {
-    if (v.size() > 1) { // 注意 只有一个元素用 <= 会发生错误
-      for (decltype(v.size()) b = 0, e = v.size() - 1; b <= e; ++b, --e) {
-        std::cout << v[b] + v[e] << " ";
-      }
-    } else {
-      std::cout << 2 * v[0];
-    } 
+  size_t size = v.size();
+  for (size_t b = 0, e = size - 1; b <= e && e < size; ++b, --e) {
+                                          // 防止 size_t 下溢
+    std::cout << v[b] + v[e] << " ";
   }
   return 0;
 }
@@ -75,23 +74,30 @@ int main(){
 int main(){
   int a;
   std::vector<int> v;
-  
   while (std::cin >> a) {
     v.push_back(a);
   }
+  for (const auto &it: v) {
+    std::cout << it << " ";
+  }
+  std::cout << "\n";
+  
   // 邻接求值
   if (v.size() > 1) {  // 判断是否有邻接数
     for (auto it = v.begin() + 1; it != v.end(); ++it) {
       std::cout << *it + *(it - 1) << " ";
     }
   }
+  std::cout << "\n";
+  
   // 前后求值
   if (!v.empty()) {
     for (auto b = v.begin(), e = v.end() - 1; b <= e; ++b, --e) {
       std::cout << *b + *e << " ";
     }
   }
-
+  std::cout << "\n";
+  
   return 0;
 }
 ```
@@ -101,14 +107,14 @@ int main(){
 
 迭代器相加没有意义, 不支持相加操作
 
-# 3.27 数组下标要求
+# 3.27 数组下标的要求
 > 假设txt_size是一个无参函数，它的返回值是int。请回答下列哪个定义是非法的，为什么？
 ```c++
 unsigned buf_size = 1024;
-int ia[buf_size];             // 合法
+int ia[buf_size];             // 非法, constexpr unsigned buf_size = 1024;
 int ia[4 * 7 - 14];           // 合法
 int ia[txt_size()];           // 合法, txt_size() 需是一个 常量表达式
-char st[11] = "fundamental";  // 非法, 11+1('\0')
+char st[11] = "fundamental";  // 非法, 11 + 1('\0')
 ```
 
 # 3.28 静态和非静态 默认初始化

@@ -102,19 +102,21 @@ while (index < s1.size()) {
 # 3.10
 > 编写一段程序，读入一个包含标点符号的字符串，将标点符号去除后输出字符串剩余的部分。
 ```c++
-std::string remove_punct(const std::string &s) {
-  std::string str;
-  for (const auto &it: s) {
+void RemovePunct(std::string &s) {
+  auto target = s.begin();
+  for (char & it : s) {
     if (!ispunct(it)) {
-      str += it;
+      *target++ = it;
     }
   }
-  return str;
+  s.erase(target, s.end());
 }
+
 int main() {
-  std::string s1("123.2?5/45'+-");
-  std::cout << s1 << std::endl;
-  std::cout << remove_punct(s1);
+  std::string s("123.2?5/45'+-");
+  std::cout << s << std::endl;
+  RemovePunct(s);
+  std::cout << s << std::endl;
   return 0;
 }
 ```
@@ -216,8 +218,7 @@ for (int i = 0; i != 10; ++i) {
 # 3.21
 > 请使用迭代器重做3.3.3节的第一个练习。
 
-参考 3.13
-
+参考 3.16
 
 # 3.22
 > 修改之前那个输出text第一段的程序，首先把text的第一段全部改成大写形式，然后输出它。
@@ -230,15 +231,16 @@ int main() {
   }
   std::string line;
   std::vector<std::string> text;
-
   while (getline(ifs, line) && !line.empty()) {
     text.push_back(line);
   }
-  for (auto it = text.cbegin(); it != text.cend() && !it->empty(); ++it) {
-    for (const auto &letter: *it) {
-      std::cout << static_cast<char>(toupper(letter));
+  for (auto & it : text) {
+    for (auto &letter: it) {
+      if (isalpha(letter)) {
+        letter = toupper(letter);
+      }
     }
-    std::cout << std::endl;
+    std::cout << it << "\n";
   }
   return 0;
 }
@@ -268,10 +270,8 @@ int main() {
   while (std::cin >> n) {
     int index = n / 10;
     auto it = v.begin();
-    for (; index > 0; --index) {
-      it++;
-    }
-    (*it)++;
+    for (; index > 0; ++it, --index) ;
+    ++(*it);
   }
   int index = 0;
   for (auto it = v.begin(); it != v.end(); ++it) {
@@ -308,7 +308,7 @@ int main() {
   for (size_t i = 0; i < size; ++i) {
     arr[i] = i;
   }
-  for (const auto &item: arr) {
+  for (const auto &item : arr) {
     std::cout << item << " ";
   }
   return 0;
@@ -337,7 +337,7 @@ int main() {
 # 3.33
 > 对于104页的程序来说，如果不初始化scores将会发生什么？
 
-dynamic init 未定义
+dynamic init 值未定义
 
 # 3.34
 > 假定p1 和 p2 都指向同一个数组中的元素，则下面程序的功能是什么？什么情况下该程序是非法的？
@@ -411,6 +411,8 @@ bool isequal(const char *a, size_t a_size, const char *b, size_t b_size) {
 bool isequal(const std::string &s1, const std::string &s2) {
   return s1 == s2;
 }
+
+// C 风格比较 略
 ```
 
 # 3.41
@@ -437,6 +439,7 @@ int main() {
     p[i] = v[i];
     std::cout << p[i] << " ";
   }
+  delete p;
   return 0;
 }
 ```

@@ -80,8 +80,9 @@ int main(int argc, char *argv[]) {
   }
   std::cout << sum;  // 3825
   /*
-  for(; n<101; n++)
-      sum+n;
+  for(; n != 101; ++n) {
+    sum += n;
+  }
   */
   return 0;
 }
@@ -95,8 +96,9 @@ int main(int argc, char *argv[]) {
   int n = 10;
   while (n != -1) std::cout << n-- << " ";
   /*
-  for(; n>-1; n--)
-      std::cout<<n<<" ";
+  for(; n != -1; --n) {
+    std::cout << n << " ";
+  }
   */
   return 0;
 }
@@ -213,7 +215,7 @@ Value : 6 occurs 1 times
 > 在网站http://www.informit.com/title/032174113 上，第1章的代码目录包含了头文件 Sales_item.h。将它拷贝到你自己的工作目录中。
 > 用它编写一个程序，读取一组书籍销售记录，将每条记录打印到标准输出上。
 ```c++
-// ./atest < ch01_data/data_1_20
+// ./a.out < ch01_data/data_1_20
 #include <iostream>
 #include "Sales_item.h"
 int main() {
@@ -228,7 +230,7 @@ int main() {
 # 1.21
 > 编写程序， 读取两个 ISBN 相同的 Sales_item 对象，输出他们的和。
 ```c++
-// ./atest < ch01_data/data_1_21
+// ./a.out < ch01_data/data_1_21
 #include <iostream>
 #include "Sales_item.h"
 using namespace std;
@@ -292,8 +294,8 @@ int main() {
 > 读输入表示多个 ISBN 的多条销售记录来测试上一个程序， 每个 ISBN 的记录应该聚在一起。
 ```c++
 // ./atest < ch01_data/data_1_24
-#include<iostream>
-#include"Sales_item.h"
+#include <iostream>
+#include "Sales_item.h"
 using namespace std;
 int main() {
   Sales_item cur;

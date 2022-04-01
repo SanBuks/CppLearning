@@ -74,14 +74,14 @@ std::cout << a << "\n";
 cin.getline(c_array, 9);  // 导致 用户未预料 的行为
 std::cout << c_array << "\n";
 
-// 上述问题原因: 
-// std::cin 读入时虽然会忽略前导空白符但是, 会将空白符遗留在缓冲区中, 产生问题
+// 上述问题原因:
+// std::cin 读入时虽然会忽略前导空白符, 但是会将空白符遗留在缓冲区中, 产生问题
 // 有三种解决方法:
 cin.getline(c_array, 9);  // (1) 明确再次使用 getline 吸收空白行
-cin >> ws;                // (2) ws(cin) 吞掉前导空白符
+cin >> ws;                // (2) ws(cin) 吞掉前导空白符 WhiteSpace
 cin.ignore(               // (3) 忽略字符 直到遇到 '\n', 包括 '\n' 也忽略在内
   std::numeric_limits<streamsize>::max(), '\n'
-);  
+);
 ```
 
 # 3. 命名空间

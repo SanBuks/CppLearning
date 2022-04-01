@@ -56,12 +56,27 @@ vec[ival++] <= vec[ival]  // 错误, 求值顺序未定义 改为 vec[ival] <= v
 # 4.20 运算符优先级
 > 假设iter的类型是vector\<string>::iterator, 说明下面的表达式是否合法。如果合法，表达式的含义是什么？如果不合法，错在何处？
 ```c++
-(a) *iter++;          // 先后置递增 再 解引用 (正确, 相当与访问当前元素后迭代器+1)
-(b) (*iter)++;        // 先解引用 再 后置递增 (错误, string 无 后置++)
-(c) *iter.empty();    // 先调用 empty 再 解引用 (错误, bool无法被解引用)
-(d) iter->empty();    // 解引用后调用 empty (正确, 判断 string 元素是否为空)
-(e) ++*iter;          // 前置++ 与 * 同级, 右结合, 先解引用后前置递增 (错误, string 无 前置 ++ )
-(f) iter++->empty();  // 先调用 empty, 再后置递增 (正确, 判断 string 元素是否为空 后 指向下一个元素)
+// 优先级从高到低
+// 左结合: ->, ., () 
+// 左结合: a++
+// 右结合: ++a, *a, &a, !a, ~a
+
+(a) *iter++;          // 先 ++ 再 *  (正确, 相当与访问当前元素后迭代器 + 1)
+(b) (*iter)++;        // 先 *  再 ++ (错误, string 无 后置++)
+(c) *iter.empty();    // 先 .  再 *  (错误, bool无法被解引用)
+(d) iter->empty();    // 先 -> 再 () (正确, 判断 string 元素是否为空)
+(e) ++*iter;          // 先 *  再 ++ (错误, string 无 前置 ++ )
+(f) iter++->empty();  // 先 -> 再 (), 再 ++ (正确, 判断 string 元素是否为空 后 指向下一个元素)
+```
+
+# 4.24 三目运算符结合律
+> 本节的示例程序将成绩划分为high pass、pass、和fail三种，它的依据是条件运算符满足右结合律。假如条件运算符满足的是左结合律，求值的过程将是怎样的？
+```c++
+finalgrade = (grade > 90) ? "high pass" : (grade < 60) ? "fail" : "pass"; 
+// 如果满足左结合律 以上逻辑变为如下
+// grade  > 90 -> "high pass" -> "fail"
+// grade <= 90  && grade < 60 -> "fail"
+// grade <= 90 && grade >= 60 返回 "pass"
 ```
 
 # 4.30 sizeof

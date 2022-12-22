@@ -1,0 +1,9 @@
+namespace data_path {
+
+    const char* const k0120DataPath = "@0120DataPath@";
+    const char* const k0121DataPath = "@0121DataPath@";
+    const char* const k0122DataPath = "@0122DataPath@";
+    const char* const k0123DataPath = "@0123DataPath@";
+    const char* const k0124DataPath = "@0124DataPath@";
+
+}

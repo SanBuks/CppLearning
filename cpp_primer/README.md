@@ -1,28 +1,34 @@
-# Part 0: Introduction
-- Chapter 1. Getting Started
+# 一 项目简介
+一个以 C++Primer_5th 为基础的学习项目. 
+内容包括但不限于学习笔记,课后习题与面试经验.
+整体以 Cmake 3.21 构建, 每章节附带习题答案与相关数据.
 
-# Part I: The Basics
-- Chapter 2. Variables and Basic Types
-- Chapter 3. Strings, Vectors, and Arrays
-- Chapter 4. Expressions
-- Chapter 5. Statements
-- Chapter 6. Functions
-- Chapter 7. Classes
+# 二 内容
+## 介绍 开始
+- 第一章 开始
 
-# Part II: The C++ Library
-- Chapter 8. The IO Library
-- Chapter 9. Sequential Containers
-- Chapter 10. Generic Algorithms
-- Chapter 11. Associative Containers
-- Chapter 12. Dynamic Memory
+## 第一部分 C++基础
+- 第二章 变量和基本类型
+- 第三章 字符串、向量和数组
+- 第四章 表达式
+- 第五章 语句
+- 第六章 函数
+- 第七章 类
 
-# Part III: Tools for Class Authors
-- Chapter 13. Copy Control
-- Chapter 14. Overloaded Operations and Conversions
-- Chapter 15. Object-Oriented Programming
-- Chapter 16. Templates and Generic Programming
+## 第二部分 C++标准库
+- 第八章 IO库
+- 第九章 顺序容器
+- 第十章 泛型算法
+- 第十一章 关联容器
+- 第十二章 动态内存
 
-# Part IV: Advanced Topics
-- Chapter 17. Specialized Library Facilities
-- Chapter 18. Tools for Large Programs
-- Chapter 19. Specialized Tools and Techniques
+## 第三部分 类设计者的工具
+- 第十三章 拷贝控制
+- 第十四章 操作重载与类型转换
+- 第十五章 面对对象程序设计
+- 第十六章 模板与泛型编程
+
+## 第四部分 高级主题
+- 第十七章 标准库特殊设施
+- 第十八章 用于大型程序的工具
+- 第十九章 特殊工具与技术

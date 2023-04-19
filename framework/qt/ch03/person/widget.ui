@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>319</width>
+    <height>221</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labBoyAge">
+       <property name="text">
+        <string>设置男孩年龄</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="sBoxBoyAge"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="pushBtnIncBoyAge">
+       <property name="text">
+        <string>boy长大一岁</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushBtnClassInfo">
+       <property name="text">
+        <string>类对象信息</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labGirlAge">
+       <property name="text">
+        <string>设置女孩年龄</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="sBoxGirlAge"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="pushBtnIncGirlAge">
+       <property name="text">
+        <string>girl长大一岁</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="pushBtnClear">
+       <property name="text">
+        <string>清空文本框</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPlainTextEdit" name="txtEdit"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushBtnClear</sender>
+   <signal>clicked()</signal>
+   <receiver>txtEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>271</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>159</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

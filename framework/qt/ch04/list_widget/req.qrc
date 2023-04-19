@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>image/124.bmp</file>
+        <file>image/408.bmp</file>
+        <file>image/410.bmp</file>
+        <file>image/412.bmp</file>
+        <file>image/delete1.bmp</file>
+        <file>image/308.bmp</file>
+        <file>image/310.bmp</file>
+        <file>image/312.bmp</file>
+        <file>image/314.bmp</file>
+        <file>image/316.bmp</file>
+        <file>image/324.bmp</file>
+        <file>image/424.bmp</file>
+        <file>image/check2.ico</file>
+        <file>image/194.JPG</file>
+        <file>image/exit.bmp</file>
+        <file>image/122.bmp</file>
+        <file>image/118.bmp</file>
+        <file>image/128.bmp</file>
+    </qresource>
+</RCC>

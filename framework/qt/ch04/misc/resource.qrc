@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>resource/image/322.bmp</file>
+        <file>resource/image/324.bmp</file>
+        <file>resource/image/exit.bmp</file>
+    </qresource>
+</RCC>

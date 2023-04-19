@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>460</width>
+    <height>186</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labNum">
+       <property name="text">
+        <string>数量:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditNum</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lEditNum">
+       <property name="text">
+        <string>12</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="labPrice">
+       <property name="text">
+        <string>单价:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditPrice</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLineEdit" name="lEditPrice">
+       <property name="text">
+        <string>5.3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btnCalc">
+       <property name="text">
+        <string>计算总价</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="labPriceSum">
+       <property name="text">
+        <string>总价:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditPriceSum</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLineEdit" name="lEditPriceSum"/>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>19</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labDec">
+       <property name="text">
+        <string>十进制:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditDec</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lEditDec">
+       <property name="text">
+        <string>13</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btnDec">
+       <property name="text">
+        <string>转换为其他进制</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labBin">
+       <property name="text">
+        <string>二进制:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditBin</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lEditBin"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="btnBin">
+       <property name="text">
+        <string>转换为其他进制</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labHex">
+       <property name="text">
+        <string>十六进制:</string>
+       </property>
+       <property name="buddy">
+        <cstring>lEditHex</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lEditHex"/>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="btnHex">
+       <property name="text">
+        <string>转换为其他进制</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,8 +1,13 @@
 # IDE dir
 *.idea/
+
 # any build dir
+remote-build/
+*/*/remote-build/
 build/
+*/*/build/
 debug/
+*/*/debug/
 
 # Prerequisites
 *.d

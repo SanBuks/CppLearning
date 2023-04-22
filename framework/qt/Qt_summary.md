@@ -448,9 +448,123 @@ void MainWindow::on_toolBox_currentChanged(int index) {
 ```
 
 - listWidget 基础操作
+```c++
+ui->listWidget->addItem(item);
+ui->listWidget->insertItem(ui->listWidget->currentRow(), item);
+auto item = ui->listWidget->takeItem(row);
+ui->listWidget->clear();
+```
+
 - 自定义右键菜单
+```c++
+void MainWindow::on_listWidget_customContextMenuRequested(const QPoint &pos) {
+  Q_UNUSED(pos);
+  auto *menu = new QMenu(this);
+  menu->addAction(ui->actListIni);
+  menu->addAction(ui->actListClear);
+  menu->addAction(ui->actListInsert);
+  menu->addAction(ui->actListAppend);
+  menu->addAction(ui->actListDelete);
+  menu->addSeparator();
+  menu->addAction(ui->actSelALL);
+  menu->addAction(ui->actSelInvs);
+  menu->addAction(ui->actSelNone);
+  menu->exec(QCursor::pos());
+  delete menu;
+}
+```
 
 ## 4.7 QTreeWidget 和 QDockWidget
+- QDockWidget 布局使用
+```c++
+// 窗体显示移动与按钮联调
+void MainWindow::on_dockWidget_visibilityChanged(bool visible) {
+  ui->actDockVisible->setChecked(visible);
+}
+void MainWindow::on_dockWidget_topLevelChanged(bool topLevel) {
+  ui->actDockFloat->setChecked(topLevel);
+}
+void MainWindow::on_actDockVisible_toggled(bool tog) {
+  ui->dockWidget->setVisible(tog);
+}
+void MainWindow::on_actDockFloat_triggered(bool checked) {
+  ui->dockWidget->setFloating(checked);
+}
+```
+
+- QTreeWidget 基本用法
+```c++
+// 在 this 中央显示 FileDialog, 标题为"文件浏览", 工作目录为 "/d/"
+auto dir_name = QFileDialog::getExistingDirectory(this, "文件浏览", "/d/");
+// 在 this 中央显示 FileDialog, 标题为"文件浏览", 工作目录为 "/d/", 过滤只保留 Images 类文件
+auto files = QFileDialog::getOpenFileNames(this, "打开多个文件", "/d/",
+                                           "Images(*.png *.xpm *.jpg)");
+
+// 1. QTreeWidgetItem 增加方法
+void MainWindow::addFolderItem(QTreeWidgetItem *parItem, const QString &dir) {
+  QIcon icon(":/images/image/open3.bmp");
+  auto folder_name = getFinalFolderName(dir);
+  auto item = new QTreeWidgetItem(itGroupItem);
+
+  // 根据 colNum 设置 text 或 icon
+  item->setIcon(colItem, icon);
+  item->setText(colItem, folder_name);
+  item->setText(colItemType, "type=itGroupItem");
+  item->setCheckState(colItem, Qt::Checked);
+
+  // 设置标志
+  item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |
+                 Qt::ItemIsEnabled | Qt::ItemIsAutoTristate);
+
+  // 设置数据
+  item->setData(colItem, Qt::UserRole, QVariant(dir));
+  if (parItem) parItem->addChild(item);
+}
+
+// 2. QTreeWidgetItem 删除方法
+void MainWindow::on_actDeleteItem_triggered() {
+  auto item = ui->treeWidget->currentItem();
+  if (!item) return;
+  auto parItem = item->parent();
+  parItem->removeChild(item);
+  delete item;
+  ui->treeWidget->setCurrentItem(parItem);
+}
+
+// 3. QTreeWidgetItem 遍历方法
+void MainWindow::on_actScanItems_triggered() {
+  for (int i = 0; i < ui->treeWidget->topLevelItemCount(); ++i) {
+    auto top_item = ui->treeWidget->topLevelItem(i);
+    changeItemCaption(top_item);
+  }
+}
+void MainWindow::changeItemCaption(QTreeWidgetItem *item) {
+  auto str = "*" + item->text(colItem);
+  item->setText(colItem, str);
+  for (int i = 0; i < item->childCount(); ++i) {
+    changeItemCaption(item->child(i));
+  }
+}
+```
+
+- ScrollArea, Pixmap 使用
+```c++
+void MainWindow::displayImage(QTreeWidgetItem *item){
+  auto filename = item->data(colItem, Qt::UserRole).toString();
+  labFile->setText(filename);
+  // 保存原始副本
+  pixmap.load(filename);
+  on_actZoomFitH_triggered();
+}
+
+void MainWindow::on_actZoomFitH_triggered() {
+  auto height_area = ui->scrollArea->height();
+  auto height_image = pixmap.height();
+  pixRatio = height_image * 1.0 / height_area;
+  auto new_pixmap = pixmap.scaledToHeight(height_area - 30);
+  ui->labPicture->setPixmap(new_pixmap);
+}
+```
 
 ## 4.8 QTableWidget
 

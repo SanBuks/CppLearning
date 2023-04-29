@@ -9,7 +9,6 @@ QT_END_NAMESPACE
 
 class PainterWidget : public QWidget {
  Q_OBJECT
-
  public:
   explicit PainterWidget(QWidget *parent = nullptr);
   ~PainterWidget() override;
@@ -17,15 +16,14 @@ class PainterWidget : public QWidget {
 
  private:
   Ui::PainterWidget *ui;
-
   // QPainter, QBrush 基本用法
   void painterBasic();
-
   // QPainterPath, 画五角星, 坐标转换
   void painterPath();
-
   // 窗口和视口关系
   void painterView();
+  // 设置 Painter 相关属性
+  void initPainter(QPainter &painter);
 };
 
 #endif

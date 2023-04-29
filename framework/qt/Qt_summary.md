@@ -570,8 +570,6 @@ void MainWindow::on_actZoomFitH_triggered() {
 
 
 # 5. Model/View 结构
-- 
-
 # 20. 串口开发
 
 - 串口通信定义

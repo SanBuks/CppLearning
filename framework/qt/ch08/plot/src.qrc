@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>image/RECTANGL.BMP</file>
+        <file>image/ELLIPSE.BMP</file>
+        <file>image/718.bmp</file>
+        <file>image/LINE.BMP</file>
+        <file>image/818.bmp</file>
+        <file>image/526.bmp</file>
+        <file>image/528.bmp</file>
+        <file>image/108.bmp</file>
+        <file>image/132.bmp</file>
+        <file>image/FREEFORM.BMP</file>
+        <file>image/UNGROUP.BMP</file>
+        <file>image/800.bmp</file>
+        <file>image/824.bmp</file>
+        <file>image/rotateleft.png</file>
+        <file>image/rotateright.png</file>
+        <file>image/zoomin.png</file>
+        <file>image/zoomout.png</file>
+        <file>image/420.bmp</file>
+        <file>image/128.bmp</file>
+        <file>image/08.JPG</file>
+        <file>image/Icon1242.ico</file>
+    </qresource>
+</RCC>

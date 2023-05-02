@@ -175,50 +175,222 @@ painter.drawEllipse(0, -100, 200, 200);
 painter.rotate(10);
 ```
 
-# 9.4 GraphicsView相关类的基本使用
-- GraphicsView, GraphicsScene, GraphicsItem 关系, 坐标轴的位置
-- 继承 GraphicsView, 在 ui 文件中增加自定义类型, 使得 View 拥有鼠标相关事件
-- Scene 的跟踪, 鼠标事件
+# 4. GraphicsView 基础
+## 4.1 相关类
+- GraphicsScene 场景类, 抽象类, 管理图形项, 传递事件
+- GraphicsView 视图类, 显示场景中的内容, 转换事件给场景类
+- GraphicsItem 图形项, 支持各类事件, 可以组合
+
+## 4.2 坐标
+### 图形项坐标
+- 中心为原点 
+- 事件坐标会被自动转换为自身坐标系
+- boundingRect() 返回的是自身坐标
+- pos() 返回父项中的坐标
+- scenePos() 返回 scene 内的坐标
+
+### 视图坐标
+- 与物理坐标一致
+- 事件先由视图坐标确定, 然后一步一步传递给场景, 图形项
+
+### 场景坐标
+- 中心为原点, 也可以定义坐标范围为某一象限
+- sceneRect() 获取场景区域
+- 图形项的 sceneBoundingRect() 返回场景坐标
+- 图形项的 BoundingRect 改变 会触发场景的 changed() 事件
+
+## 4.3 显示坐标的列子
+### 继承 GraphicsView
+```c++
+// 使得 view 拥有鼠标相关事件, 需要覆盖相关函数
+// 需要在 ui 设计界面将 QGraphicsView 控件提升到自定义类的头文件中 
+class MGraphicsView : public QGraphicsView {
+  
+Q_OBJECT
+
+ public:
+  explicit MGraphicsView(QWidget *parent = nullptr);
+  ~MGraphicsView() override;
+ signals:
+  void mouseMovePoint(QPoint point);                 // 鼠标移动信号
+  void mouseClicked(QPoint point);                   // 鼠标点击信号
+ protected:
+  void mousePressEvent(QMouseEvent *event) override; // 鼠标按触事件
+  void mouseMoveEvent(QMouseEvent *event) override;  // 鼠标移动事件
+ private:
+  Ui::MGraphicsView *ui;
+  QLabel *labViewCord;
+  QLabel *labSceneCord;
+  QLabel *labItemCord;
+  QLabel *labItemInfo;
+  QGraphicsScene *scene;
+};
+```
+
+### View 相应事件
+- 将 View 的事件传递给 MainWindow
 ```c++
 // override 鼠标左击事件
-// event => mouseClicked(signal) => on_mouseClicked(QPoint point)
 void MGraphicsView::mousePressEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
     // 获取位置地点
     QPoint point = event->pos();
-    // 发送 signal
+    // 发送 mouseClicked signal 给 MainWindow 处理
     emit mouseClicked(point);
   }
   // 一定要调用父类的虚方法
   QGraphicsView::mousePressEvent(event);
 }
-// 鼠标点击信号槽
-void MainWindow::on_mouseClicked(QPoint point) {
-  QPointF point_f = ui->graphicsView->mapToScene(point);
-  QGraphicsItem *item = scene->itemAt(point_f, ui->graphicsView->transform());
-  if (item) {
-    auto pointItem = item->mapFromScene(point);
-    labItemCord->setText(QString::asprintf("Item 坐标 (%.0f, %.0f)",
-                                            pointItem.x(),
-                                            pointItem.y()));
-  }
-}
-
 // override 鼠标移动事件
 void MGraphicsView::mouseMoveEvent(QMouseEvent *event) {
   auto point = event->pos();
+  // 发送 mouseMovePoint signal 给 MainWindow 处理
   emit mouseMovePoint(point);
   QGraphicsView::mouseMoveEvent(event);
 }
-// 鼠标移动槽函数
+```
+
+### View 事件的槽函数
+```c++
+// 显示 scene 坐标 和 view 坐标
 void MainWindow::on_mouseMovePoint(QPoint point) {
   labViewCord->setText(QString::asprintf("View 坐标 (%d, %d)",
-                                         point.x(),
-                                         point.y()));
-
+                                         point.x(), point.y()));
   auto point_scene = ui->graphicsView->mapToScene(point);
   labSceneCord->setText(QString::asprintf("Scene 坐标 (%.0f, %.0f)",
-                                          point_scene.x(),
-                                          point_scene.y()));
+                                          point_scene.x(), point_scene.y()));
+}
+
+// 显示 item 坐标
+void MainWindow::on_mouseClicked(QPoint point) {
+  // 获取 scene 坐标
+  QPointF point_f = ui->graphicsView->mapToScene(point);
+  // 获取 view 的 变化矩阵
+  QTransform transform = ui->graphicsView->transform();
+  // 获取 item 对象
+  QGraphicsItem *item = scene->itemAt(point_f, transform); // 必须提供矩阵
+  if (item) {
+    auto pointItem = item->mapFromScene(point);
+    labItemCord->setText(QString::asprintf("Item 坐标 (%.0f, %.0f)",
+                                           pointItem.x(), pointItem.y()));
+  }
+}
+```
+
+### View 相关设置
+```c++
+// 启用鼠标跟踪, 在鼠标移动过程中, 会实时接收到 QMouseEvent 事件
+graphicsView->setMouseTracking(true);
+// 设定鼠标样式
+graphicsView->setCursor(Qt::CrossCursor);
+// 设定为橡皮筋模式, 框选内容
+graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+```
+
+### Item 添加
+```c++
+// 添加 Item 的坐标系是以 scene 为准
+auto item_ellipse = new QGraphicsEllipseItem(-100, -50, 200, 100);
+// Item 相关设置
+item_ellipse->setFlags(QGraphicsItem::ItemIsSelectable |
+                       QGraphicsItem::ItemIsFocusable |
+                       QGraphicsItem::ItemIsMovable);
+```
+
+# 5. GraphicsView 实例
+## 5.1 双击 Dialog
+```c++
+// 字体 Dialog
+template<typename T>
+void MainWindow::setFontColor(T *item) {
+  auto font = item->font();
+  bool ok;
+  font = QFontDialog::getFont(&ok, font, this, "请选择字体类型");
+  if (ok) {
+    item->setFont(QFont(font));
+  }
+}
+
+// 设定相关图形项属性
+auto point_scene = ui->gView->mapToScene(point);
+auto item = scene->itemAt(point_scene, ui->gView->transform());
+if (!item) return;
+switch (item->type()) {
+  case QGraphicsRectItem::Type: {
+  auto item_rect = dynamic_cast<QGraphicsRectItem *>(item);
+  setBrushColor(item_rect);
+  break;
+}
+// ...
+```
+
+## 5.2 组合打散
+```c++
+void MainWindow::on_actGroup_triggered() {
+  auto list = scene->selectedItems();
+  auto cnt = list.count();
+  if (cnt == 0) return;
+
+  auto group = new QGraphicsItemGroup;
+  scene->addItem(group);
+  for (int i = 0; i < cnt; ++i) {
+    auto item = list.at(i);
+    item->setSelected(false);
+    item->clearFocus();
+    group->addToGroup(item);
+  }
+  group->setFlags(QGraphicsItem::ItemIsSelectable |
+                  QGraphicsItem::ItemIsFocusable |
+                  QGraphicsItem::ItemIsMovable);
+  group->setZValue(++frontZ);
+  scene->clearSelection();
+  group->setSelected(true);
+}
+
+void MainWindow::on_actGroupBreak_triggered() {
+  auto list = scene->selectedItems();
+  auto cnt = list.count();
+  if (cnt == 0) return;
+
+  QList<QGraphicsItemGroup *> groups;
+  for (int i = 0; i < cnt; ++i) {
+    auto item = list.at(i);
+    if (item->type() == QGraphicsItemGroup::Type) {
+      groups.append(dynamic_cast<QGraphicsItemGroup *>(item));
+    }
+  }
+
+  for (auto item : groups) {
+    scene->destroyItemGroup(item);
+  }
+}
+```
+
+## 5.3 变形恢复
+```c++
+void MainWindow::on_actZoomOut_triggered() {
+  auto list = scene->selectedItems();
+  auto cnt = list.count();
+  if (cnt != 0) {
+    for (int i = 0; i < cnt; ++i) {
+      auto item = list.at(i);
+      item->setScale(-0.1 + item->scale());
+    }
+  } else {
+    ui->gView->scale(0.9, 0.9);
+  }
+}
+
+void MainWindow::on_actRestore_triggered() {
+  auto list = scene->selectedItems();
+  auto cnt = list.count();
+  if (cnt != 0) {
+    for (int i = 0; i < cnt; ++i) {
+      auto item = list.at(i);
+      item->setScale(1);
+    }
+  } else {
+    ui->gView->resetTransform();
+  }
 }
 ```

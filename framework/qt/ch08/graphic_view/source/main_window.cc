@@ -49,12 +49,12 @@ void MainWindow::on_mouseMovePoint(QPoint point) {
 
 void MainWindow::on_mouseClicked(QPoint point) {
   QPointF point_f = ui->graphicsView->mapToScene(point);
-  QGraphicsItem *item = scene->itemAt(point_f, ui->graphicsView->transform());
+  QTransform transform = ui->graphicsView->transform();    // 获取view 的 变化矩阵
+  QGraphicsItem *item = scene->itemAt(point_f, transform); // 必须提供矩阵
   if (item) {
     auto pointItem = item->mapFromScene(point);
     labItemCord->setText(QString::asprintf("Item 坐标 (%.0f, %.0f)",
-                                            pointItem.x(),
-                                            pointItem.y()));
+                                            pointItem.x(), pointItem.y()));
   }
 }
 

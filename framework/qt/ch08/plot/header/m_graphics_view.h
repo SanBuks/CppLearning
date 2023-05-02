@@ -1,11 +1,11 @@
-#ifndef GRAPHIC_VIEW_SOURCE_MGRAPHICS_VIEW_H_
-#define GRAPHIC_VIEW_SOURCE_MGRAPHICS_VIEW_H_
+#ifndef PLOT_SRC_M_GRAPHICS_VIEW_H_
+#define PLOT_SRC_M_GRAPHICS_VIEW_H_
 
 #include <QGraphicsView>
-#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MGraphicsView; }
+class QGraphicsView;
 QT_END_NAMESPACE
 
 class MGraphicsView : public QGraphicsView {
@@ -15,19 +15,20 @@ class MGraphicsView : public QGraphicsView {
   explicit MGraphicsView(QWidget *parent = nullptr);
   ~MGraphicsView() override;
 
-  signals:
+ signals:
   void mouseMovePoint(QPoint point);
   void mouseClicked(QPoint point);
+  void mouseDoubleClick(QPoint point);
+  void keyPress(QKeyEvent *event);
+
  protected:
-  void mousePressEvent(QMouseEvent *event) override;
   void mouseMoveEvent(QMouseEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseDoubleClickEvent(QMouseEvent *event) override;
+  void keyPressEvent(QKeyEvent *event) override;
+
  private:
   Ui::MGraphicsView *ui;
-  QLabel *labViewCord;
-  QLabel *labSceneCord;
-  QLabel *labItemCord;
-  QLabel *labItemInfo;
-  QGraphicsScene *scene;
 };
 
-#endif
+#endif //PLOT_SRC_M_GRAPHICS_VIEW_H_

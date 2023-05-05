@@ -1,0 +1,135 @@
+{
+	"kind" : "toolchains",
+	"toolchains" : 
+	[
+		{
+			"compiler" : 
+			{
+				"id" : "GNU",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/include"
+					],
+					"linkDirectories" : 
+					[
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/lib",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"mingw32",
+						"gcc",
+						"moldname",
+						"mingwex",
+						"pthread",
+						"advapi32",
+						"shell32",
+						"user32",
+						"kernel32",
+						"iconv",
+						"mingw32",
+						"gcc",
+						"moldname",
+						"mingwex"
+					]
+				},
+				"path" : "D:/develop_tool/qt5.9/Tools/mingw530_32/bin/gcc.exe",
+				"version" : "5.3.0"
+			},
+			"language" : "C",
+			"sourceFileExtensions" : 
+			[
+				"c",
+				"m"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"id" : "GNU",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/include",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/include/c++",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/include/c++/i686-w64-mingw32",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/include/c++/backward"
+					],
+					"linkDirectories" : 
+					[
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc/i686-w64-mingw32/5.3.0",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib/gcc",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/i686-w64-mingw32/lib",
+						"D:/develop_tool/qt5.9/Tools/mingw530_32/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"stdc++",
+						"mingw32",
+						"gcc_s",
+						"gcc",
+						"moldname",
+						"mingwex",
+						"pthread",
+						"advapi32",
+						"shell32",
+						"user32",
+						"kernel32",
+						"iconv",
+						"mingw32",
+						"gcc_s",
+						"gcc",
+						"moldname",
+						"mingwex"
+					]
+				},
+				"path" : "D:/develop_tool/qt5.9/Tools/mingw530_32/bin/g++.exe",
+				"version" : "5.3.0"
+			},
+			"language" : "CXX",
+			"sourceFileExtensions" : 
+			[
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"implicit" : {},
+				"path" : "D:/develop_tool/qt5.9/Tools/mingw530_32/bin/windres.exe"
+			},
+			"language" : "RC",
+			"sourceFileExtensions" : 
+			[
+				"rc",
+				"RC"
+			]
+		}
+	],
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

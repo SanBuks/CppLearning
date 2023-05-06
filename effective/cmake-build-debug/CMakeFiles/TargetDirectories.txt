@@ -1,5 +1,0 @@
-D:/learn/CppLearning/effective/cmake-build-debug/CMakeFiles/test.dir
-D:/learn/CppLearning/effective/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/learn/CppLearning/effective/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-D:/learn/CppLearning/effective/cmake-build-debug/effective_cpp/CMakeFiles/edit_cache.dir
-D:/learn/CppLearning/effective/cmake-build-debug/effective_cpp/CMakeFiles/rebuild_cache.dir

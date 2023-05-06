@@ -9,6 +9,10 @@ build/
 debug/
 */*/debug/
 
+# any image dir
+*/*/image
+*/*/icon
+
 # Prerequisites
 *.d
 

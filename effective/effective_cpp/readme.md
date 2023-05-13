@@ -16,53 +16,30 @@
 - #02_class_static_variable
 
 # 03. 尽可能使用 const
-- 尽量限制用户对参数的改动
-- 作为 const 返回值放止作为左值 (&&限定符)
-- const 成员函数会因为对象是否const而发生重载
-- logical const 理念 : const 成员函数可以修改对象的bits, 前提是用户侦测不出来的情况下, 使用mutable限定这些bits
-- non-const成员函数 委托 const 成员函数
-```c++
-const char &operator[](std::size_t posi) const { 
-  return text[posi];
-}
-char &operator[](std::size_t posi) { 
-  return const_cast<char &>(static_cast<const A&>(*this)[posi]);
-  // 注意 转换为 const A& ， 如果事 const A 会发生拷贝
-}
-// 反过来, const 成员函数不应该委托 non-const 成员函数
-// 如果调用 non-const 成员 需要 const_cast<A &>(*this)[posi] 危险 
-// 
-```
-## 定义对象时候一定赋予初识值完成初始化
-- 总使用初识值列表初始化, 对所有数据成员进行初始化 (包含默认初始化)
-- 构造函数可以委托 或者 将赋值成本较低的元素封装在 其他初始化函数中
-- 初识值列表按声明顺序初始化, 基类成员先被初始化
-## non-local static 对象在不同编译单元的依存问题
-```c++
-// c++ 未规定跨编译单元 non-local static 对象的初始化顺序
+## const 语义
+- 通过顶层 const 或底层 const 规范用户使用
+  - 限定返回值, 防止用户认作左值进行赋值
+  - 限定参数, 强调参数不可变的语义
+  - 限定函数, 函数因 对象是否是 const 而发生重载
+- #03_use_const 
 
-// a.cpp
-// lazy-evaluated, correctly-destroyed, and thread-safe
-// c++11 standard guarnted that If control enters the declaration concurrently while the variable is being initialized, 
-// the concurrent execution shall wait for completion of the initialization.
-class Singleton{
-public:
-static Singleton &get(){
-static Singleton;
-return Singleton;
-}
-Singleton(const Singleton &) = delete;
-Singleton &operator=(const Singleton &) = delete;
+# 04 确定对象被使用前已先被初始化
+## 必须初始化
+- 内置类型: 初始化值未定义, 必须手动初始化
+- 自定义类型: 防止进行额外一次拷贝构造, 所有成员必须使用 初始化列表 初始化
 
-private:
-Singleton() {
-}
-};
+## 构造函数初始化相关问题
+- 初识值列表按声明顺序初始化, 注意彼此依存关系
+- 使用委托构造达到复用效果
+- 基类成员先被初始化
 
-// b.cpp
-Singleton aa=Singleton::get();
-```
-# 2. 构造,析构和赋值运算
+## 全局静态对象在不同编译单元中初始化顺序未定义
+- 编译单元即 .cc 文件
+- 全局静态变量依靠另外编译单元内的全局静态变量则会产生未定义
+- 一般通过 单例模式 解决上述未定义问题
+- #04_singleton
+
+# 05 构造,析构和赋值运算
 ## 空类自动创建 dctor, dtor, cctor 和 operator =
 - 他们在调用时才自动创建
 - dctor 默认为 non-virtual, 除非父类有virtual dctor

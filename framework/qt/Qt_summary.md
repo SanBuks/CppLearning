@@ -639,7 +639,7 @@ void DiceThread::run() {
 
 ### 信号槽与主线程通信
 ```c++
-// thread 定义在窗口控件中
+// thread 定义在窗口控件中通过信号槽与 GUI 通信
 
 // 关联相关信号
 connect(&thread_, &DiceThread::started, this, &DiceDialog::onThreadStarted);

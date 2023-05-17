@@ -18,7 +18,7 @@ std::mutex SingletonDoubleCheck::mutex_;
 SingletonDoubleCheck::SingletonDoubleCheck() = default;
 SingletonDoubleCheck &SingletonDoubleCheck::Get() {
   // 懒汉模式: 第一次调用时初始化
-  // 线程安全: 采用 Double-Checked Locking 保证
+  // 线程安全: 采用 Double-Checked Locking 保证 (C++11 后保证 new 过程是线程安全的)
   // 析构安全: 注册静态析构函数, 程序结束时，将自动调用该静态析构函数销毁单例对象, 只析构一次
   if (!singleton_double_check_) {
     std::lock_guard<std::mutex> lock(mutex_);

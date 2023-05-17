@@ -604,11 +604,66 @@ ui->tableWidget->setItem(row, COLIndex, item);  // 根据行列设定 item
 
 
 # 13. 线程
-## 13.1 基础
-### 继承一个线程
+## 13.1 基于信号槽通信
+### 定义工作线程类
 ```c++
-
+class DiceThread : public QThread {
+  Q_OBJECT
+  // ...
+ signals:
+  void NewValue(int seq, int dice_value);
+ protected:
+  void run() override;  // 重载线程 run 函数
+ private:
+  bool stop_;           // 线程主循环状态
+};
 ```
+
+### 实现 run 函数
+```c++
+void DiceThread::run() {
+  // qsrand 是线程安全的
+  qsrand(QTime::currentTime().msec());
+  // 线程主循环
+  while (!stop_) {
+    if (!pause_) {
+      dice_value_ = qrand() % 6 + 1;
+      ++seq_;
+      emit NewValue(seq_, dice_value_);
+    }
+    msleep(1000);
+  }
+  quit();
+}
+```
+
+### 信号槽与主线程通信
+```c++
+// thread 定义在窗口控件中
+
+// 关联相关信号
+connect(&thread_, &DiceThread::started, this, &DiceDialog::onThreadStarted);
+connect(&thread_, &DiceThread::finished, this, &DiceDialog::onThreadFinished);
+connect(&thread_, &DiceThread::NewValue, this, &DiceDialog::onThreadNewValue);
+
+// 启动线程
+thread_.start();
+
+// 阻塞线程, 一般需要在退出一类事件中对关联线程进行处理
+void DiceDialog::closeEvent(QCloseEvent *event) {
+  // 判断线程状态
+  if (thread_.isRunning()) {
+    // 修改线程状态位
+    thread_.StopThread();
+    // 阻塞线程
+    thread_.wait();
+  }
+  event->accept();
+}
+```
+
+## 13.2 基于互斥量通信
+
 
 # 5. Model/View 结构
 # 20. 串口开发

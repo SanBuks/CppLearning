@@ -21,9 +21,9 @@ void DiceThread::StopThread() {
 }
 
 void DiceThread::run() {
-  // qsrand 是线程安全
+  // qsrand 是线程安全的
   qsrand(QTime::currentTime().msec());
-  // 循环线程
+  // 线程主循环
   while (!stop_) {
     if (!pause_) {
       dice_value_ = qrand() % 6 + 1;

@@ -603,6 +603,13 @@ ui->tableWidget->setItem(row, COLIndex, item);  // 根据行列设定 item
 ### 
 
 
+# 13. 线程
+## 13.1 基础
+### 继承一个线程
+```c++
+
+```
+
 # 5. Model/View 结构
 # 20. 串口开发
 
@@ -613,20 +620,3 @@ ui->tableWidget->setItem(row, COLIndex, item);  // 根据行列设定 item
 - 数据位 setDataBits()
 - 停止位 setStopBits() 停止位越多, 时钟异步的容忍越大, 传输速率越慢
 - 奇偶校验位
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

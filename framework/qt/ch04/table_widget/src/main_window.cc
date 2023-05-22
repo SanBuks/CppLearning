@@ -28,7 +28,7 @@ MainWindow::~MainWindow() {
 void MainWindow::on_btnSetHeader_clicked() {
   // 设计表头文字
   QStringList header;
-  header << "姓名" << "性别" << "出生日期" << "民族" << "是否是党员" << "分数";
+  header << "姓名" << "性别" << "出生日期" << "民族" << "分数" << "是否是党员" ;
   ui->tableWidget->setColumnCount(header.count());
 
   // 简单设计表头
@@ -67,10 +67,6 @@ void MainWindow::on_btnSetRows_clicked() {
   ui->tableWidget->setAlternatingRowColors(is_color);
 }
 
-void MainWindow::on_chkBoxRowColor_clicked(bool checked) {
-  ui->tableWidget->setAlternatingRowColors(checked);
-}
-
 void MainWindow::CreateARow(int row, const QString &name, const QString &sex, QDate date,
                   const QString &ethnicity, bool is_pm, int score) {
   QTableWidgetItem *item;
@@ -98,6 +94,10 @@ void MainWindow::CreateARow(int row, const QString &name, const QString &sex, QD
   item = new QTableWidgetItem(ethnicity, CTEthnicity);
   item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
   ui->tableWidget->setItem(row, COLEthnicity, item);
+  //score
+  item = new QTableWidgetItem(QString::asprintf("%d", score), CTScore);
+  item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+  ui->tableWidget->setItem(row, COLScore, item);
   //pm
   item = new QTableWidgetItem("党员", CTPM);
   item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -108,10 +108,6 @@ void MainWindow::CreateARow(int row, const QString &name, const QString &sex, QD
   }
   item->setBackground(Qt::yellow);
   ui->tableWidget->setItem(row, COLPM, item);
-  //score
-  item = new QTableWidgetItem(QString::asprintf("%d", score), CTScore);
-  item->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-  ui->tableWidget->setItem(row, COLScore, item);
 }
 
 void MainWindow::on_btnInsertRow_clicked() {
@@ -142,5 +138,64 @@ void MainWindow::on_btnAutoWidth_clicked() {
 }
 
 void MainWindow::on_btnReadToEdit_clicked() {
+  QString str;
+  for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
+    str = QString::asprintf("第 %d 行:", i + 1);
+    for (int j = 0; j < ui->tableWidget->columnCount() - 1; ++j) {
+      str += " " + ui->tableWidget->item(i, j)->text();
+    }
+    if (ui->tableWidget->item(i, FieldColNum::COLPM)->checkState()) {
+      str += " pm";
+    } else {
+      str += " no_pm";
+    }
 
+    ui->plainTextEdit->appendPlainText(str);
+  }
+}
+
+void MainWindow::on_chkBoxRowColor_clicked(bool checked) {
+  ui->tableWidget->setAlternatingRowColors(checked);
+}
+
+void MainWindow::on_chkBoxTabEditable_clicked(bool checked) {
+  if (checked) {
+    ui->tableWidget->setEditTriggers(QAbstractItemView::DoubleClicked |
+                                     QAbstractItemView::SelectedClicked);
+  } else {
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  }
+}
+
+void MainWindow::on_chkBoxHeaderH_clicked(bool checked) {
+  ui->tableWidget->horizontalHeader()->setVisible(checked);
+}
+
+void MainWindow::on_chkBoxHeaderV_clicked(bool checked) {
+  ui->tableWidget->verticalHeader()->setVisible(checked);
+}
+
+void MainWindow::on_rBtnSelectItem_clicked() {
+  ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectItems);
+}
+
+void MainWindow::on_rBtnSelectRow_clicked() {
+  ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+}
+
+void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentColumn,
+                                                   int previousRow, int previousColumn) {
+  Q_UNUSED(previousRow)
+  Q_UNUSED(previousColumn)
+
+  auto item = ui->tableWidget->item(currentRow, currentColumn);
+  if (!item) return;
+
+  labCellIndex->setText(QString::asprintf("第 %d 行, %d 列", currentRow, currentColumn));
+  labCellType->setText(QString::asprintf("类型 %d", item->type()));
+  if (item->data(Qt::UserRole).isValid()) {
+    labStudID->setText(QString::asprintf("数据 %d", item->data(Qt::UserRole).toInt()));
+  } else {
+    labStudID->setText(QString::asprintf("数据 %d", 0));
+  }
 }

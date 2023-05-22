@@ -566,43 +566,6 @@ void MainWindow::on_actZoomFitH_triggered() {
 }
 ```
 
-## 4.8 QTableWidget
-### 设置表头 
-```c++
-// 设置列数
-ui->tableWidget->setColumnCount(header.count());
-// 设置每列显示文字 
-QStringList header;
-header << "姓名" << "性别" << "出生日期" << "民族" << "是否是党员" << "分数";
-// 插入 item
-item = new QTableWidgetItem(header.at(i));
-ui->tableWidget->setHorizontalHeaderItem(i, item);
-```
-
-### 生成多行未初始化数据
-```c++
-ui->tableWidget->setRowCount(row_count);            // 设定 row_count 行数据
-ui->tableWidget->setAlternatingRowColors(is_color); // 设定 底色
-```
-
-### 修改一行数据
-```c++
-QTableWidgetItem *item;
-item = new QTableWidgetItem(text, CType);       // 设定显示文字, item 的 类别
-
-item->setData(Qt::UserRole, QVariant(kStuId));  // 设定自定义数据
-item->setCheckState(Qt::Checked);               // 设定选择框
-item->setBackground(Qt::yellow);                // 设定背景颜色
-item->setTextAlignment(Qt::AlignHCenter);       // 设定文字对齐方式
-item->setIcon(icon);                            // 设定图标
-
-ui->tableWidget->setItem(row, COLIndex, item);  // 根据行列设定 item
-// 如此反复创建一行数据
-```
-
-### 
-
-
 # 13. 线程
 ## 13.1 基于信号槽通信
 ### 定义工作线程类
@@ -664,12 +627,12 @@ void DiceDialog::closeEvent(QCloseEvent *event) {
 
 ## 13.2 基于互斥量通信
 
-
 # 5. Model/View 结构
-# 20. 串口开发
 
+# 20. 串口开发
 - 串口通信定义
 - QSerialPortInfo, QSerialPort
+
 ## 设置串口
 - 波特率 setBaudRate() 默认9600
 - 数据位 setDataBits()

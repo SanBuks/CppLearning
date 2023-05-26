@@ -39,8 +39,8 @@
 - 一般通过 单例模式 解决上述未定义问题
 - #04_singleton
 
-# 05 构造,析构和赋值运算
-## 空类自动创建 dctor, dtor, cctor 和 operator =
+# 05 了解 C++ 默默编写并调用哪些函数
+## 默认创建 析构, ctor, cctor 和 operator =
 - 他们在调用时才自动创建
 - dctor 默认为 non-virtual, 除非父类有virtual dctor
 - 如果数据成员是 const 或者 引用, 则相关合成拷贝函数为删除状态

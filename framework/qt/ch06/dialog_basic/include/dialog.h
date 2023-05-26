@@ -21,6 +21,14 @@ class Dialog : public QDialog {
   void on_btnSelDir_clicked();
   void on_btnSave_clicked();
   void on_btnColor_clicked();
+  void on_btnFont_clicked();
+  void on_btnInputString_clicked();
+  void on_btnInputItem_clicked();
+  void on_btnInputInt_clicked();
+  void on_btnInputFloat_clicked();
+
+  void on_btnMsgInformation_clicked();
+  void on_btnMsgQuestion_clicked();
  private:
   Ui::Dialog *ui;
 };

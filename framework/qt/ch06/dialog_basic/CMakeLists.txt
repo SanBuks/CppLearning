@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS forms)
 
-set(CMAKE_PREFIX_PATH "D:/DevelopTool/qt/5.9.9/mingw53_32")
+set(CMAKE_PREFIX_PATH "D:/develop_tool/qt5.9/5.9.9/mingw53_32")
 
 find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 

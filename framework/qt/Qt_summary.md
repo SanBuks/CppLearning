@@ -1,63 +1,66 @@
-# 1. 安装使用
-- 安装网站: `https://download.qt.io/archive/qt/5.9/5.9.9/qt-opensource-windows-x86-5.9.9.exe`
-- 四种项目模板, 主要用 Widget 和 Console 两种
-- 三种基类: QMainWindow, QWidget, QDialog
-- 项目结构: 
-  - CMakeList cmake 文件
-  - .pro qmake 文件
-  - .ui 可视化界面
-- clion 使用注意事项
-  - 需设置专属 Tool Chain
-  - ExternalTool 添加 Qt Designer
+# 1. 认识 Qt
+## 安装配置
+- 网址: https://download.qt.io/official_releases/online_installers/qt-unified-windows-x64-online.exe.mirrorlist
+- Clion Tool Set: qt\Tools\mingw530_32
+- Clion External Tool: qt\5.9.9\mingw53_32\bin\designer.exe  $FileDir$ $FileName$
+
+## 项目模板
+- Widget Application: Widget-UI 项目
+- Console Application: 控制台 项目
+- Quick Application: QML-UI 项目
+
+## 三种基类
+- QMainWindow 主窗口类
+- QWidget 可视界面类
+- QDialog 对话窗口类
+
+## 项目结构
+- build 构建目录
+- header 头文件
+- src 源文件
+- ui ui文件
+- main.cc 主程序入口
+- CMakeList.txt CMake文件 
+
+## CMake 文件
+```cmake
+cmake_minimum_required(VERSION 3.5)
+
+project(hello_qt LANGUAGES CXX)
+
+# 设置语言标准
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# 加入 build 与 project 目录 到 include 路径中
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# 设置自定义 Qt 安装路径 /mingw53_32
+set(CUSTOM_QT_INSTALL_PATH "D:/DevelopTool/qt/5.9.9")
+# 指定 UIC 路径
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_SOURCE_DIR}/ui)
+
+set(CMAKE_AUTOMOC ON) # 自动采用 MOC 处理源文件
+set(CMAKE_AUTOUIC ON) # 自动采用 UIC 处理.ui文件
+set(CMAKE_AUTORCC ON) # 自动采用 RCC 处理.qrc文件
+
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)  # 引用 Qt 模块
+
+# 主界面
+add_library(main_window SHARED
+            src/mainwindow.cc
+            header/mainwindow.h) # MOC 原因需要包含头文件
+target_link_libraries(main_window PUBLIC Qt5::Widgets) # 引用 Qt 库
+target_include_directories(main_window PUBLIC header)  # 指定 头文件夹
+
+# 主程序
+add_executable(hello_qt main.cc)
+target_link_libraries(hello_qt PRIVATE main_window)
+```
+
+## QtDesign 使用
 
 # 2. GUI 应用程序设计基础
 ## 2.1 UI文件设计与运行机制
-- pro 文件结构
-```qmake
-QT       += core gui                            # 增加 core 模块
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets # 根据版本增加 widget 模块
-
-TARGET = example_name                           # 生成目标名称
-CONFIG += c++11                                 # 编译标准
-DEFINES += QT_DEPRECATED_WARNINGS               # 如果使用废弃的 QT 特性则发出警告
-
-# 对应源文件, 头文件, ui 文件
-SOURCES += main.cpp widget.cpp
-HEADERS += widget.h
-FORMS += widget.ui
-```
-
-- cmake 文件
-```cmake
-#目录结构
-#-build
-#-header
-#-source
-#CMakeList.txt
-
-cmake_minimum_required(VERSION 3.5)
-project(calc LANGUAGES CXX)
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# 需要设置环境变量
-set(CMAKE_PREFIX_PATH "D:\\DevelopTool\\qt\\5.9.9\\mingw53_32")
-
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-
-add_executable(calc
-               source/main.cpp
-               source/widget.cpp
-               source/widget.ui # ui 必须与 cpp 同目录
-               header/widget.h) # 头文件不可少
-target_include_directories(calc PUBLIC header)
-target_link_libraries(calc PRIVATE Qt5::Widgets)
-```
-
 - 对象浏览器中的继承关系 举例: QObject->QWidget->QFrame->QLabel
 - 信号槽机制: sender->signal->receiver->slot
 - main 函数

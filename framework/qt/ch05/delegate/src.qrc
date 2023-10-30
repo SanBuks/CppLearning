@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>image/open.bmp</file>
+        <file>image/save.bmp</file>
+        <file>image/insert.bmp</file>
+        <file>image/append.bmp</file>
+        <file>image/delete.bmp</file>
+        <file>image/clean.bmp</file>
+        <file>image/exit.bmp</file>
+        <file>image/import1.bmp</file>
+        <file>image/306.bmp</file>
+        <file>image/508.bmp</file>
+        <file>image/510.bmp</file>
+        <file>image/512.bmp</file>
+        <file>image/500.bmp</file>
+    </qresource>
+</RCC>

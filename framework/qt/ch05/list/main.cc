@@ -1,11 +1,10 @@
 #include <QApplication>
 #include <QPushButton>
-
-#include "widget.h"
+#include "list_widget.h"
 
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
-  Widget widget;
-  widget.show();
+  ListWidget list_widget;
+  list_widget.show();
   return QApplication::exec();
 }

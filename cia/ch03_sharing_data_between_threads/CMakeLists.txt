@@ -1,0 +1,3 @@
+project(ch03_sharing_data_between_threads)
+
+add_executable(ch03_list_mutex ch03_list_mutex.cc)

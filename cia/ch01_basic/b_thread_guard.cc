@@ -1,7 +1,15 @@
 #include <iostream>
 #include <thread>
 
-// RAII 处理子线程资源回收问题
+/**
+ * 1. RAII 处理子线程资源回收问题
+ * 2. RAII 处理异常抛出问题时子线程处理问题
+ * 3. 三种解决子线程资源的方法:
+ *   - smart pointer
+ *   - join
+ *   - copy
+ */
+
 class ThreadGuard {
  public:
   explicit ThreadGuard(std::thread &t) : t_(t) {}
@@ -9,7 +17,7 @@ class ThreadGuard {
   ThreadGuard &operator=(const ThreadGuard &rhs) = delete;
   ~ThreadGuard() {
     if (t_.joinable()) {
-      // notify
+      // ... 主动激活子线程结束
       t_.join();
     }
   }
@@ -19,8 +27,12 @@ class ThreadGuard {
 
 int main() {
   const std::string str = "Hello Concurrent World!\n";
-  auto func = [](const std::string &str) { std::cout << str; };
+  auto func = [](const std::string &str) {
+    // simulate tx
+    for (int i = 0; i < 5; ++i)
+      std::cout << str;
+  };
   std::thread t(func, str);
   ThreadGuard guard(t);
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  throw std::runtime_error("force throw exception!");
 }

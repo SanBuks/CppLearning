@@ -16,6 +16,13 @@ class HierarchyMutex {
     mutex_.lock();
     update_hierarchy_violation();
   }
+  bool try_lock() {
+    check_set_hierarchy_violation();
+    if (!mutex_.try_lock())
+      return false;
+    update_hierarchy_violation();
+    return true;
+  }
 
   void unlock() {
     if (thread_value_ != ch_value_)  // 不是原来的锁
@@ -49,18 +56,18 @@ int main() {
   HierarchyMutex mutex2(500);
 
   std::jthread t1([&mutex1, &mutex2]() {
-    mutex1.lock();         // max(p) 1000(c)
+    std::lock_guard<HierarchyMutex> mt1(mutex1); // max(p) 1000(c)
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    mutex2.lock();         // max 1000(p) 500(c)
+    std::lock_guard<HierarchyMutex> mt2(mutex2); // max 1000(p) 500(c)
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    mutex2.unlock();       // max(p) 1000(c)
-    mutex1.unlock();       // max(c)
+    // ~mt2 max(p) 1000(c)
+    // ~mt1 max(c)
   });
 
   std::jthread t2([&mutex1, &mutex2]() {
     mutex2.lock();         // max(p) 500(c)
     std::this_thread::sleep_for(std::chrono::seconds(1));
-    mutex1.lock();         // max 500(p) 1000(c) violation ! 如果不是层级锁, 不按照顺序加索可能导致出现死锁
+    mutex1.lock();         // max 500(p) 1000(c) violation ! 如果不是层级锁, 不按照顺序加索可能导致出现死锁, 借此监测隐蔽的死锁问题
     std::this_thread::sleep_for(std::chrono::seconds(1));
     mutex1.unlock();
     mutex2.unlock();

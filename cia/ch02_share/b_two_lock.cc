@@ -78,7 +78,7 @@ void safe_swap(Manager &lhs, Manager &rhs) {
   std::scoped_lock lock(lhs.mutex_, rhs.mutex_);
 
 // 同时加锁, 采用领养锁
-//  std::lock(lhs.mutex_, rhs.mutex_);
+//  std::lock(lhs.mutex_, rhs.mutex_);    // 必须加锁后领养, 否则 lock_guard 析构解锁时会报错
 //  std::lock_guard lg1(lhs.mutex_, std::adopt_lock);
 //  std::this_thread::sleep_for(std::chrono::seconds(1));
 //  std::lock_guard lg2(rhs.mutex_, std::adopt_lock);

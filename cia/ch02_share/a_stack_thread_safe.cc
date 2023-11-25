@@ -14,7 +14,7 @@ class TStack {
  public:
   TStack() : stack_() {}
   TStack(const TStack & rhs) {
-    std::lock_guard guard(mutex_);
+    std::lock_guard guard(rhs.mutex_);
     stack_ = rhs.stack_;
   }
   TStack &operator=(const TStack &rhs) = delete;

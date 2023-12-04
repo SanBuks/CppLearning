@@ -23,11 +23,17 @@ int main() {
   std::thread t(process, "hello promise", std::move(promise));
 
   std::string result;
+  int count = 0;
   while (true) {
-    future.wait_for(std::chrono::seconds(1)) == std::future_status::ready) {
+    if (future.wait_for(std::chrono::seconds(1)) == std::future_status::ready) {
+      auto str = future.get();
+      std::cout << str << "\n";
+      if (str.starts_with("async"))
+        break;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    std::cout << std::format("poll time: {}\n", ++count);
   }
-
   t.join();
   return 0;
 }

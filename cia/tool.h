@@ -5,6 +5,8 @@
 #include <string>
 #include <ctime>
 #include <chrono>
+#include <random>
+#include <thread>
 
 std::string get_time() {
   auto current_time = std::chrono::system_clock::now();
@@ -24,4 +26,13 @@ void print_time() {
   std::cout << get_time() << "\n";
 }
 
+bool random_bool() {
+  static std::mt19937 gen(std::random_device{}());
+  static std::uniform_int_distribution<int> dis(0, 1);
+  return dis(gen);
+}
+
+size_t thread_id() {
+  return std::hash<std::thread::id>()(std::this_thread::get_id());
+}
 #endif

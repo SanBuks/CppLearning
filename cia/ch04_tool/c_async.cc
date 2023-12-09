@@ -4,6 +4,7 @@
 #include <thread>
 #include <future>
 #include <iostream>
+#include <random>
 #include <shared_mutex>
 
 #include "../tool.h"
@@ -49,9 +50,29 @@ void wait_for_test() {
   }
 }
 
+std::string process_maythrow(const std::string &str) {
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  if (random_bool()) {
+    return std::format("async str: {}", str);
+  } else {
+    throw std::runtime_error("exception");
+  }
+
+}
+void catch_exception() {
+  auto future = std::async(std::launch::async, process_maythrow, "no exception");
+  // 存在可能抛出异常的 async 需要 catch
+  try {
+    std::cout << future.get() << "\n";
+  } catch (const std::exception &ex) {
+    std::cout << "async error: " << ex.what() << "\n";
+  }
+}
+
 int main() {
 //  defer_test();
 //  dtor_block_test();
-  wait_for_test();
+//  wait_for_test();
+  catch_exception();
   return 0;
 }

@@ -73,7 +73,7 @@
         </size>
        </property>
        <property name="text">
-        <string/>
+        <string>name</string>
        </property>
       </widget>
      </item>
@@ -86,7 +86,7 @@
         </size>
        </property>
        <property name="text">
-        <string/>
+        <string>size</string>
        </property>
       </widget>
      </item>
@@ -99,7 +99,7 @@
         </size>
        </property>
        <property name="text">
-        <string/>
+        <string>type</string>
        </property>
       </widget>
      </item>

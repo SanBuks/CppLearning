@@ -41,8 +41,8 @@ class TableWindow : public QMainWindow {
   QLabel *lab_pos_;
   QLabel *lab_cell_text_;
 
-  QStandardItemModel *item_model_;
-  QItemSelectionModel *item_selection_model_;
+  QStandardItemModel *item_model_;             // model 表示数据
+  QItemSelectionModel *item_selection_model_;  // select model
 
   Ui::TableWindow *ui;
 };

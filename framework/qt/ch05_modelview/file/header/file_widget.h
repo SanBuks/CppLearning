@@ -1,9 +1,5 @@
-//
-// Created by San on 2023/10/23.
-//
-
-#ifndef FILE_UI_FILE_WIDGET_H_
-#define FILE_UI_FILE_WIDGET_H_
+#ifndef FILE_WIDGET_H_
+#define FILE_WIDGET_H_
 
 #include <QWidget>
 #include <QFileSystemModel>
@@ -24,7 +20,7 @@ class FileWidget : public QWidget {
  private:
   Ui::FileWidget *ui;
 
-  QFileSystemModel *file_system_model_;
+  QFileSystemModel *file_model_;
 };
 
 #endif //FILE_UI_FILE_WIDGET_H_

@@ -1,0 +1,51 @@
+## 结构
+- 源数据（data）是原始数据，如数据库的一个数据表或 SQL 查询结果、内存中的一个字符串列表或磁盘文件系统结构等。
+- 视图（view）也称为视图组件，是界面组件，视图从模型获得数据然后将其显示在界面上。
+- 模型（model）也称为数据模型，与源数据通信，并为视图组件提供数据接口。它从源数据提取需要的数据，用于视图组件进行显示和编辑
+- 代理（delegate）在视图与模型之间交互操作时提供的临时编辑器当需要在视图上编辑数据时，代理会为编辑数据提供一个编辑器，这个编辑器获取模型的数据、接受用户编辑的数据后又将其提交给模型.
+## 基础
+- QAbstractItemModel 模型中存储数据的基本单元都是项（item），每个项有一个行号和一个列号，还有一个父项（parent item）。模型都有一个隐藏的根项（root item）
+- QModelIndex 是表示模型索引的类。模型索引提供访问数据的临时指针，用于通过模型提取或修改数据
+- Qt::ItemDataRole 表示设置数据的类型
+- QItemSelectionModel 表示选择模型，在视图组件上选择的项发生变化时，通过选择模型可以获取所有被选择项的模型索引
+- model 模型常用函数:
+  - int rowCount(const QModelIndex &parent = QModelIndex()) 
+  - int columnCount(const QModelIndex &parent = QModelIndex()) 
+  - bool insertRow(int row, const QModelIndex &parent = QModelIndex()) 
+  - bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) 
+  - bool removeRow(int row, const QModelIndex &parent = QModelIndex()) 
+  - bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) 
+  - bool insertColumn(int column, const QModelIndex &parent = QModelIndex()) 
+  - bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) 
+  - bool removeColumn(int column, const QModelIndex &parent = QModelIndex()) 
+  - bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) 
+  - bool moveRow(const QModelIndex &sourceParent, int sourceRow, const QModelIndex &destinationParent, int destinationChild) 
+  - bool moveColumn(const QModelIndex &sourceParent, int sourceColumn, const QModelIndex &destinationParent, int destinationChild) 
+  - void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) 
+  - bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) 
+  - QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) 
+  - bool clearItemData(const QModelIndex &index) 
+  - void setRootIndex(const QModelIndex &index); 设置模型根结点
+- view 常用属性: 
+  - editTriggers
+  - alternatingRowColors
+  - selectionMode
+  - selectionBehavior
+- view 常用接口函数:
+  - QModelIndex currentIndex()
+  - void setCurrentIndex(const QModelIndex &index)
+  - void selectAll()
+  - void clearSelection()
+- view 常用信号:
+  - void clicked(const QModelIndex &index)
+  - void doubleClicked(const QModelIndex &index)
+  - void entered(const QModelIndex &index)
+  - void pressed(const QModelIndex &index)
+
+
+# QFileSystemModel
+- setRootPath(QDir::currentPath()); 设置根节点路径
+- fileName(index); 下标获取文件名
+- filePath(index); 下标获取文件路径
+- isDir(index); 判断是否是目录
+- size(index); 获取文件大小

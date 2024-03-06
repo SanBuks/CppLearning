@@ -44,7 +44,9 @@ void Session(sock_ptr sock) {
   }
 }
 
+[[noreturn]]
 void Server(io_context &ioc, unsigned int port) {
+  // 创建 acceptor, open, bind
   ip::tcp::acceptor acc(ioc, ip::tcp::endpoint(ip::address_v4::any(), port));
   while (true) {
     // 创建 socket 并监听
@@ -62,7 +64,6 @@ int main() {
 
   try {
     Server(ioc, port);
-    return 0;
   } catch (const system::system_error &err) {
     std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();

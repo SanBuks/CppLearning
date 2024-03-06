@@ -13,8 +13,8 @@ int main() {
   const int kBufferSize = 100;
 
   try {
-    ip::tcp::endpoint ep(ip::address_v4::from_string(ip), port);
     io_context ioc;
+    ip::tcp::endpoint ep(ip::address_v4::from_string(ip), port);
     ip::tcp::socket sock(ioc, ep.protocol());
     sock.connect(ep);
 

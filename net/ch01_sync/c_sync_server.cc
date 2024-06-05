@@ -16,7 +16,7 @@
 using namespace boost;
 using namespace boost::asio;
 
-using sock_ptr = std::shared_ptr<ip::tcp::socket>;   // socket 对象指针
+using sock_ptr = std::unique_ptr<ip::tcp::socket>;   // socket 对象指针
 std::set<std::shared_ptr<std::jthread>> thread_set;  // 处理会话的线程池
 const int kMaxLength = 1024;
 
@@ -45,25 +45,27 @@ void Session(sock_ptr sock) {
 }
 
 [[noreturn]]
-void Server(io_context &ioc, unsigned int port) {
+void Server(std::unique_ptr<io_context> pioc, unsigned int port) {
   // 创建 acceptor, open, bind
-  ip::tcp::acceptor acc(ioc, ip::tcp::endpoint(ip::address_v4::any(), port));
+  ip::tcp::endpoint ep(ip::address_v4::any(), port);
+  ip::tcp::acceptor acc(*pioc, ep);
+  acc.listen(30);
   while (true) {
     // 创建 socket 并监听
-    auto sock = std::make_shared<ip::tcp::socket>(ioc);
+    auto sock = std::make_unique<ip::tcp::socket>(*pioc);
     acc.accept(*sock);
     // 创建线程处理会话
-    auto th = std::make_shared<std::jthread>(Session, sock);
+    auto th = std::make_shared<std::jthread>(Session, std::move(sock));
     thread_set.insert(th);
   }
 }
 
 int main() {
-  io_context ioc;
+  auto pioc = std::make_unique<io_context>();
   unsigned int port = 2333;
 
   try {
-    Server(ioc, port);
+    Server(std::move(pioc), port);
   } catch (const system::system_error &err) {
     std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();

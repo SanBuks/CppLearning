@@ -2,12 +2,13 @@
 
 #include <iostream>
 #include <format>
-#include <boost/asio.hpp>
+
+#include "asio.hpp"
+#include "spdlog/spdlog.h"
 
 namespace net {
 
-using namespace boost;
-using namespace boost::asio;
+using namespace asio;
 
 int ReadWriteLearning::CreateConstBuffer() {
   // method 1
@@ -61,7 +62,8 @@ int ReadWriteLearning::SyncByWriteSome() {
     // ...
 
     return 0;
-  } catch (const system::system_error &err) {
+  } catch (const system_error &err) {
+
     std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.code().message());
     return err.code().value();
   }
@@ -83,8 +85,8 @@ int ReadWriteLearning::SyncBySendOrWrite() {
       return 1;
     }
     return 0;
-  } catch (const system::system_error &err) {
-    std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
+  } catch (const system_error &err) {
+    spdlog::error("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();
   }
 }
@@ -108,8 +110,8 @@ int ReadWriteLearning::SyncByReadSome() {
     }
     std::cout << std::string(buf, kBlockSize);
     return 0;
-  } catch (const system::system_error &err) {
-    std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
+  } catch (const system_error &err) {
+    spdlog::error("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();
   }
 }
@@ -133,8 +135,8 @@ int ReadWriteLearning::SyncByReceiveOrRead() {
     }
     std::cout << std::string(buf, kBlockSize);
     return 0;
-  } catch (const system::system_error &err) {
-    std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
+  } catch (const system_error &err) {
+    spdlog::error("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();
   }
 }

@@ -81,3 +81,8 @@ mutable_buffer: [5][...][...][...][...][...]
 - write(sock,..)/sock.send: 阻塞写入指定字节数
 - read_some: 非阻塞, 尽可能读, 返回读出字节数, 可能需要轮询读取
 - read(sock,..)/sock.receive: 阻塞读取到指定字节数
+
+# SyncServer
+- Server 创建 accept, 接收 socket 
+- Session 通过线程处理 socket
+- 获取远端地址 session sock->remote_endpoint().address()

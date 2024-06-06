@@ -5,7 +5,8 @@
 #include <memory>
 #include <thread>
 
-#include <boost/asio.hpp>
+#include "asio.hpp"
+#include "spdlog/spdlog.h"
 
 // 特点
 // 1. read_some 存在阻塞
@@ -13,8 +14,7 @@
 // 3. 应答非全双工
 // 4. 适合简单需求
 
-using namespace boost;
-using namespace boost::asio;
+using namespace asio;
 
 using sock_ptr = std::unique_ptr<ip::tcp::socket>;   // socket 对象指针
 std::set<std::shared_ptr<std::jthread>> thread_set;  // 处理会话的线程池
@@ -24,30 +24,29 @@ void Session(sock_ptr sock) {
   try {
     while (true) {
       char data[kMaxLength] = {};
-      system::error_code error;
+      error_code error;
       // auto num_rec = sock->receive(buffer(data, kMaxLength));  // 阻塞到 读完 kMaxLength 为止, 不推荐
       auto size = sock->read_some(buffer(data, kMaxLength), error);
 
       if (error == error::eof) {   // 断开连接异常
-        std::cout << std::format("connection {} closed!", sock->remote_endpoint().address().to_string()) << std::endl;
+        spdlog::info("connection {} closed!", sock->remote_endpoint().address().to_string());
         break;
-      } else if (error.failed()) { // 其他异常
-        throw system::system_error(error);
+      } else if (error) {          // 其他异常
+        throw system_error(error);
       }
-      std::cout << std::format("receive from {} ", sock->remote_endpoint().address().to_string()) << std::endl;
-      std::cout << std::format("receive message: {}", std::string(data, size)) << std::endl;
-
+      spdlog::info("receive from {} ", sock->remote_endpoint().address().to_string());
+      spdlog::info("receive message: {}", std::string(data, size));
       sock->send(buffer(data, size));
     }
-  } catch (const system::system_error &err) {
-    std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
+  } catch (const system_error &err) {
+    spdlog::error("error code: {}, error msg: {}", err.code().value(), err.what());
   }
 }
 
 [[noreturn]]
 void Server(std::unique_ptr<io_context> pioc, unsigned int port) {
-  // 创建 acceptor, open, bind
   ip::tcp::endpoint ep(ip::address_v4::any(), port);
+  // 创建 acceptor, open, bind
   ip::tcp::acceptor acc(*pioc, ep);
   acc.listen(30);
   while (true) {
@@ -66,7 +65,7 @@ int main() {
 
   try {
     Server(std::move(pioc), port);
-  } catch (const system::system_error &err) {
+  } catch (const system_error &err) {
     std::cout << std::format("error code: {}, error msg: {}", err.code().value(), err.what());
     return err.code().value();
   }

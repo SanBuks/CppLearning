@@ -1,26 +1,25 @@
 #include "a_sync_basic.h"
 
 #include <string>
-#include <format>
 #include <iostream>
 
-#include <boost/asio.hpp>
+#include "spdlog/spdlog.h"
+#include "asio.hpp"
 
 namespace net {
 
-using namespace boost;
-using namespace boost::asio;
+using namespace asio;
 
 int BasicLearning::CreateEndPoint() {
   // system::error_code 形式获取错误信息
-  system::error_code err;
+  error_code err;
 
   // 解析 ip 地址
   auto ip_address = ip::address::from_string("127.0.0.1", err);
   // 解析 ip 地址 (任意) 一般用于服务器
   //auto ip_address = ip::address_v4::any();
-  if (err.failed()) {
-    std::cout << std::format("error value : {}, err message : {}", err.value(), err.message());
+  if (err) {
+    spdlog::error("error value : {}, err message : {}", err.value(), err.message());
     return err.value();
   }
 
@@ -42,10 +41,10 @@ int BasicLearning::CreateSocket() {
   ip::tcp::socket sock(ioc);
 
   // 打开 socket
-  boost::system::error_code err;
+  error_code err;
   err = sock.open(protocol, err);
-  if (err.failed()) {
-    std::cout << std::format("error value : {}, err message : {}", err.value(), err.message());
+  if (err) {
+    spdlog::info("error value : {}, err message : {}", err.value(), err.message());
     return err.value();
   }
   return 0;
@@ -62,18 +61,18 @@ int BasicLearning::CreateAcceptor() {
   // 可以直接通过 ep 创建 acceptor 并绑定
 //ip::tcp::acceptor acceptor(ioc, ep);
 
-  system::error_code err;
+  error_code err;
   // 打开 acceptor
   err = acceptor.open(protocol, err);
-  if (err.failed()) {
-    std::cout << std::format("error value : {}, err message : {}", err.value(), err.message());
+  if (err) {
+    spdlog::error("error value : {}, err message : {}", err.value(), err.message());
     return err.value();
   }
 
   // 绑定 acceptor
   err = acceptor.bind(ep, err);
-  if (err.failed()) {
-    std::cout << std::format("error value : {}, err message : {}", err.value(), err.message());
+  if (err) {
+    spdlog::error("error value : {}, err message : {}", err.value(), err.message());
     return err.value();
   }
   // ...
@@ -94,7 +93,7 @@ int BasicLearning::ConnectEndPoint() {
     // ...
 
     return 0;
-  } catch (const system::system_error &err) {
+  } catch (const system_error &err) {
     std::cout << std::format("error value : {}, err message : {}", err.code().value(), err.code().message());
     return err.code().value();
   }
@@ -118,7 +117,7 @@ int BasicLearning::DnsConnectEndPoint() {
 
     // ...
 
-  } catch (const system::system_error &err) {
+  } catch (const system_error &err) {
     std::cout << std::format("error value : {}, err message : {}", err.code().value(), err.code().message());
     return err.code().value();
   }
@@ -140,7 +139,7 @@ int BasicLearning::AcceptConnection() {
 
     // ...
 
-  } catch (const system::system_error &err) {
+  } catch (const system_error &err) {
     std::cout << std::format("error value : {}, err message : {}", err.code().value(), err.code().message());
     return err.code().value();
   }

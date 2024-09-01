@@ -6,26 +6,6 @@
 
 namespace net {
 
-MsgNode::MsgNode(const char *msg, std::size_t len)
-    : msg_(new char[len]{}),
-      cur_len_(0),
-      len_(len) {
-  memcpy(msg_, msg, len);
-}
-MsgNode::MsgNode(std::size_t len)
-    : msg_(new char[len]{}),
-      cur_len_(0),
-      len_(len) {}
-MsgNode::~MsgNode() { delete [] msg_; }
-
-char *MsgNode::GetMsg() const { return msg_; }
-unsigned int MsgNode::GetCurLen() const { return cur_len_; }
-unsigned int MsgNode::GetLen() const { return len_; }
-
-void MsgNode::SetMsg(char *msg) { msg_ = msg; }
-void MsgNode::SetCurLen(unsigned int cur_len) { cur_len_ = cur_len; }
-void MsgNode::SetLen(unsigned int len) { len_ = len; }
-
 WriteSession::WriteSession(sock_ptr sock)
     : socket_(sock),
       msg_queue_(),

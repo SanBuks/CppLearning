@@ -4,34 +4,12 @@
 #include <memory>
 #include <queue>
 
-#include "boost/asio.hpp"
+#include "asio.hpp"
+#include "spdlog/spdlog.h"
 
 namespace net {
 
-using namespace boost;
-using namespace boost::asio;
-
-// 消息体
-class MsgNode {
-
- public:
-  MsgNode(const char *msg, std::size_t len);
-  explicit MsgNode(std::size_t len);
-  ~MsgNode();
-
-  [[nodiscard]] char *GetMsg() const;
-  [[nodiscard]] unsigned int GetCurLen() const;
-  [[nodiscard]] unsigned int GetLen() const;
-
-  void SetMsg(char *msg);
-  void SetCurLen(unsigned int cur_len);
-  void SetLen(unsigned int len);
-
- private:
-  char *msg_;            // 首地址
-  unsigned int cur_len_; // 当前长度
-  unsigned int len_;     // 总长度
-};
+using namespace asio;
 
 // 写会话类
 class WriteSession {
@@ -75,12 +53,12 @@ class ReadSession {
   void Connect(const ip::tcp::endpoint &ep);
 
   // 异步读取数据
-  void ReadCallBack(const system::error_code &error_code, std::size_t bytes_read);
+  void ReadCallBack(const error_code &error_code, std::size_t bytes_read);
   // 异步读取数据
   void ReadSocket();
 
   // 异步读取所有数据 回调
-  void ReadAllCallBack(const system::error_code &error_code, std::size_t bytes_read);
+  void ReadAllCallBack(const error_code &error_code, std::size_t bytes_read);
   // 异步读取所有数据 (async_receive 不能和 async_read_some 混着用)
   void ReadAllSocket();
 
